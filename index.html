@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Constructeur-Demo</title>
+  <link rel="icon" type="image/x-icon" href="https://ressources.revolutionnez.ca/assets/favicon.ico"/>
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="./assets/css/font-awesome.css">
+  <link rel="stylesheet" href="./assets/css/lightgallery.min.css">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <script src="https://unpkg.com/vue@3"></script>
+  <script type="text/javascript" src="./js/jszip-utils.js"></script>
+  <style>
+    .spinner-border {
+      width: 1rem;
+      height: 1rem;
+      margin-left: 4px;
+    }
+
+  </style>
+  <style>
+/*    @media (min-width: 576px) {*/
+/*    .navbar-grid {*/
+/*        display: grid;*/
+/*        grid-template-columns: repeat(10px, 1fr);*/
+/*    }*/
+/*}*/
+#gridDemo, #gridDemo2 {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr); /* 4 images par ligne par défaut */
+  gap: 1px; 
+}
+
+@media (max-width: 767px) {
+  /* Pour les écrans plus petits (comme les mobiles en mode paysage) */
+  .navbar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  }
+  #gridDemo, #gridDemo2 {
+    grid-template-columns: repeat(6, 1fr); /* 6 images par ligne */
+  }
+}
+
+@media (max-width: 575.98px) {
+  .navbar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  }
+  #gridDemo, #gridDemo2 {
+    grid-template-columns: repeat(5, 1fr); /* 5 images par ligne */
+    gap: 1px;
+  }
+}
+.grid-square {
+  /* Styles pour les éléments de la grille */
+  list-style-type: none; /* Supprimer les puces de la liste */
+}
+
+</style>
+    <!--
+    Mandatory in IE 6, 7, 8 and 9.
+  -->
+    <!--[if IE]>
+    <script type="text/javascript" src="dist/jszip-utils-ie.js"></script>
+  <![endif]-->
+
+
+  </head>
+  <body>    
+    <div id="main">
+      <div class="container-fluid p-3">
+        <div class="row justify-content-center">
+          <div class="col-md-4">
+            <!-- Collection Name-->
+            <div class="form-floating mb-3">
+              <select class="form-select" v-model="currentFolder" v-on:change="onChanged" style="height: 60px; width: 50%; border: 2px solid lightblue;">
+                <option v-for="folder in folders" :value="folder">
+                  {{folder.example}} 
+                </option>
+              </select>
+              <label f>Collection 360</label>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-8" >
+            <div class="row"> 
+              <ul id="MiniLeftNav" class="nav flex-column nav-pills col-md-1 align-items-center navbar-grid" role="tablist" aria-orientation="vertical">
+                <li>
+                  <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true"  v-on:click="onChangeTab('IMAGE')">
+                    <i class="fa fa-image fa-2x"></i> 
+                    <span>PHOTOS & CONTRÔLES</span>
+                  </button>
+                </li>
+                <li>
+                  <button class="nav-link" id="optPaid-tab" data-bs-toggle="tab" data-bs-target="#optPaid-tab-pane" type="button" role="tab" aria-controls="optPaid-tab-pane" aria-selected="false" v-on:click="onChangeTab('PAID_OPTIONS')" :disabled="currentFolder.productImagesSmall.length === 0"
+                  :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
+                  <!-- <i class="fa fa-cart-plus fa-2x"></i>  -->
+                  <i class="fa fa-arrows-to-dot fa-2x"></i>
+                  <span>OPTIMISATION DES PHOTOS</span>
+                </button>
+              </li>
+              <li>
+                <button class="nav-link" id="texte-tab" data-bs-toggle="tab" data-bs-target="#texte-tab-pane" type="button" role="tab" aria-controls="texte-tab-pane" aria-selected="false" v-on:click="onChangeTab('TEXT')" :disabled="currentFolder.productImagesSmall.length === 0"
+                :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
+                <i class="fa fa-text-width fa-2x"></i> 
+                <span>TITRE & DESCRIPTIONS</span>
+              </button>
+            </li>
+            <li>
+              <button class="nav-link" id="pdtLink-tab" data-bs-toggle="tab" data-bs-target="#pdtLink-tab-pane" type="button" role="tab" aria-controls="pdtLink-tab-pane" aria-selected="false" v-on:click="onChangeTab('PRODUCT_LINKS')" :disabled="currentFolder.productImagesSmall.length === 0"
+              :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
+              <i class="fa fa-link fa-2x"></i> 
+              <span>Liens du produit</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-link" id="compaLink-tab" data-bs-toggle="tab" data-bs-target="#compaLink-tab-pane" type="button" role="tab" aria-controls="compaLink-tab-pane" aria-selected="false" v-on:click="onChangeTab('COMPANY_LINKS')" :disabled="currentFolder.productImagesSmall.length === 0"
+            :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
+            <i class="fa fa-building fa-2x"></i> 
+            <span>Liens de l'entreprise</span>
+          </button>
+        </li>
+        <li>
+          <button class="nav-link" id="lastStep-tab" data-bs-toggle="tab" data-bs-target="#lastStep-tab-pane" type="button" role="tab" aria-controls="lastStep-tab-pane" aria-selected="false" v-on:click="onChangeTab('DOWNLOADING')" :disabled="currentFolder.productImagesSmall.length === 0"
+          :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
+          <i class="fa fa-download fa-2x"></i> 
+          <span>TELECHARGEMENT ANIMATION 360PIK</span>
+        </button>
+      </li>
+      <li>
+        <button class="nav-link" id="help-tab" data-bs-toggle="modal" data-bs-target="#myModal" type="button">
+          <i class="fa fa-question fa-2x"></i> 
+          <span>Guides</span>
+        </button>
+      </li>
+
+    </ul>
+    <div class="tab-content col-md-11" id="v-pills-tabContent">
+      <div class="tab-pane fade show active p-2" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+        <!-- <h6 class="text-center mb-4 text-muted">IMAGES & CONTRÔLES</h6> -->
+        <div class="row">
+          <div class="col-md-12">
+            <div class="tab-content pe-3 ps-3" id="nav-tabContent">                      
+              <div class="tab-pane fade show active" id="product" role="tabpanel" aria-labelledby="product-tab" tabindex="0">
+                <ul id="gridDemo">
+                  <li class="p-0 mb-1 grid-square" v-for="(item, idx) in currentFolder.productImagesSmall">
+                    <div class="thumb border d-flex justify-content-between" v-bind:style='{ backgroundImage: "url("+item+")", }'>
+                      <i class="fa fa-trash" aria-hidden="true" v-on:click="deleteImage(idx)"></i>
+                    </div> 
+                  </li>
+                </ul>
+              </div>
+              <div class="tab-pane fade" id="detail" role="tabpanel" aria-labelledby="detail-tab" tabindex="0">
+                <div id="gridDemo2">
+                  <li class="p-0 mb-1 grid-square" v-for="(item, idx) in currentFolder.detailsImages">
+                    <div class="thumb border d-flex justify-content-between" v-bind:style='{ backgroundImage: "url("+item+")", }'>
+                      <i class="fa fa-trash" aria-hidden="true" v-on:click="deleteImage(idx)"></i>
+                    </div> 
+                  </li>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="toolbar mt-4" style="background-color: #fff;">
+            <div class="toolbarItem">
+              <div class="form-check form-switch">
+                <!-- <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" v-model="currentFolder.continous" v-on:change="onChanged"> -->
+                <label class="form-check-label" style="margin-left: -10%;" for="flexSwitchCheckChecked1">Rotations initiales</label>
+                <input class="ms-2" type="number" v-model="currentFolder.dataStop" v-on:change="onChanged" max="3" min="0" style="width: 20%;">  
+                <!-- Ajout du bouton Test -->
+                <button id="fullscreenTest" class="btn ms-2" style="background-color: grey; color: white; height: 35px;" @click="toggleAnimation" v-bind:disabled="currentFolder.dataStop === 0 || currentFolder.dataStop === ''">Vérifier</button>
+
+              </div>
+            </div>
+            <div class="toolbarItem">
+              <label class="me-2">Vitesse de rotation</label>
+              <input type="range" v-model="frameTime" v-on:change="onChanged"  min="0" max="300" step="30" class="sliderTime me-2">
+              <b class="text-muted">{{currentFolder.productImagesSmall.length*frameTime/1000}} sec</b>
+            </div>
+            <div class="toolbarItem">
+              <div class="border bg-light" id="count" style="height: auto;width:90px;padding: 2px;text-align: center;font-weight: 800;"> 0 / 0 </div>
+            </div>
+          </div>
+          <p v-if="rotationMessage">{{ rotationMessage }}</p>
+          <!--<div class="toolbar" style="background-color: #f1f1f1;">-->
+            <!--    <div class="toolbarItem">-->
+              <!--        <button type="button" class="btn btn-secondary btn-sm" v-on:click="inverse()" style="margin-right: 10px;">Inverser le sens du rotation</button>-->
+              <!--        <button type="button" class="btn btn-secondary btn-sm" id="reverseButton">-->
+                <!--            <span id="buttonText">Inverser l'ordre des photos</span>-->
+                <!--            <span id="loader" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>-->
+                <!--            <span id="loadingText" class="d-none">  Chargement...</span>-->
+                <!--        </button>-->
+                <!--    </div>-->
+                <!--    <div class="toolbarItem btn-group">-->
+                  <!--        <input type="radio" class="btn-check" id="optionsliderControl" v-model="currentFolder.sliderControl" value="SLIDER" v-on:change="onChanged"/>-->
+                  <!--        <label class="btn btn-sm btn-outline-secondary border-grey me-2" for="optionsliderControl" style=" width: 98px; "> -->
+                    <!--            <img v-if="currentFolder.sliderControl == 'SLIDER' " src="./assets/icons/slider-active.png"  style="width: 100%;"/>-->
+                    <!--            <img v-if="currentFolder.sliderControl != 'SLIDER' " src="./assets/icons/slider-inactive.png"  style="width: 100%;"/>-->
+                    <!--        </label>-->
+
+                    <!--        <input type="radio" class="btn-check" id="optionsliderControl2" v-model="currentFolder.sliderControl" value="ROTATE" v-on:change="onChanged"/>-->
+                    <!--        <label class="btn btn-sm btn-outline-secondary border-grey" for="optionsliderControl2" style=" width: 98px; ">                                                                -->
+                      <!--            <img v-if="currentFolder.sliderControl == 'ROTATE' " src="./assets/icons/rotate-active.png" style="width: 100%;"/>-->
+                      <!--            <img v-if="currentFolder.sliderControl != 'ROTATE' " src="./assets/icons/rotate-inactive.png"  style="width: 100%;"/>-->
+                      <!--        </label>-->
+                      <!--    </div>-->
+                      <!--</div>-->
+                      <div class="toolbar" style="background-color: #f1f1f1;" :disabled="currentFolder.productImagesSmall.length === 0"
+                      :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
+                      <div class="toolbarItem">
+                        <button type="button" class="btn btn-secondary btn-sm d-block d-md-inline-block mb-2 mb-md-0" v-on:click="inverse()" style="margin-right: 10px;">Inverser le sens du rotation</button>
+                        <button type="button" class="btn btn-secondary btn-sm d-block d-md-inline-block" id="reverseButton">
+                          <span id="buttonText">Inverser l'ordre des photos</span>
+                          <span id="loader" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                          <span id="loadingText" class="d-none">  Chargement...</span>
+                        </button>
+                      </div>
+                      <!-- <div class="toolbarItem btn-group btn-group-sm d-inline-flex">
+                        <input type="radio" class="btn-check" id="optionsliderControl" v-model="currentFolder.sliderControl" value="SLIDER" v-on:change="onChanged"/>
+                        <label class="btn btn-sm btn-outline-secondary border-grey me-2" for="optionsliderControl" style="width: 98px;">
+                            <img v-if="currentFolder.sliderControl == 'SLIDER'" src="./assets/icons/slider-active.png" style="width: 100%;"/>
+                            <img v-if="currentFolder.sliderControl != 'SLIDER'" src="./assets/icons/slider-inactive.png" style="width: 100%;"/>
+                        </label>
+                    
+                        <input type="radio" class="btn-check" id="optionsliderControl2" v-model="currentFolder.sliderControl" value="ROTATE" v-on:change="onChanged"/>
+                        <label class="btn btn-sm btn-outline-secondary border-grey" for="optionsliderControl2" style="width: 98px;">
+                            <img v-if="currentFolder.sliderControl == 'ROTATE'" src="./assets/icons/rotate-active.png" style="width: 100%;"/>
+                            <img v-if="currentFolder.sliderControl != 'ROTATE'" src="./assets/icons/rotate-inactive.png" style="width: 100%;"/>
+                        </label>
+                    </div> -->
+
+                    <div class="toolbarItem btn-group btn-group-sm d-inline-flex">
+                      <input type="radio" class="btn-check" id="optionsliderControl" v-model="currentFolder.sliderControl" value="SLIDER" v-on:change="onChanged"/>
+                      <label class="btn btn-sm btn-outline-secondary border-grey me-2" for="optionsliderControl" style="width: 98px;">
+                          <img v-if="currentFolder.sliderControl == 'SLIDER'" src="./assets/icons/slider-active.png" style="width: 100%;"/>
+                          <img v-if="currentFolder.sliderControl != 'SLIDER'" src="./assets/icons/slider-inactive.png" style="width: 100%;"/>
+                      </label>
+                  
+                      <input type="radio" class="btn-check" id="optionsliderControl2" v-model="currentFolder.sliderControl" value="ROTATE" v-on:change="onChanged"/>
+                      <label class="btn btn-sm btn-outline-secondary border-grey" for="optionsliderControl2" style="width: 98px;">
+                          <img v-if="currentFolder.sliderControl == 'ROTATE'" src="./assets/icons/rotate-active.png" style="width: 100%;"/>
+                          <img v-if="currentFolder.sliderControl != 'ROTATE'" src="./assets/icons/rotate-inactive.png" style="width: 100%;"/>
+                      </label>
+                  </div>
+                  
+                    
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade p-4 bg-light" id="optPaid-tab-pane" role="tabpanel" aria-labelledby="optPaid-tab" tabindex="0">
+                  <h6 class="text-center mb-4 text-muted">OPTIMISATION DES PHOTOS</h6><br>
+                  <p>Nous mettons à votre disposition <b><u>gratuitement</u></b> notre constructeur <b>360PIK Démo</b>.</p><br>
+
+                  <!-- Toggle for animation + gif + video -->
+            <!-- <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" role="switch" id="animationGifVideo" v-model="currentFolder.animationGifVideo" style="width: 2rem; height: 1.50rem;">
+                <label class="form-check-label" for="animationGifVideo"><b>Activer la compression des photos, la création d'une vidéo MP4 et d'un gif animé pour vos médias sociaux</b></label>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 d-flex justify-content-center">
+                    <b v-if="currentFolder.animationGifVideo "> 12.95 $ CAD</b>
+                    <b v-if="!currentFolder.animationGifVideo "> 0.00 $ CAD</b>
+                </div>
+              </div> -->
+
+              <div class="row justify-content-between align-items-center mt-4">
+                                            <!-- <div class="col-md-3">
+                                                <button type="button" class="btn btn-secondary btn-block mb-1">Payer la facture</button>
+                                                <button type="button" class="btn btn-secondary btn-block">Faire une avance</button>
+                                              </div> -->
+                                              <div class="col-md-3">
+                                                <select class="form-select form-select-sm mb-1" v-model="quality">
+                                                  <option value="0" selected disabled>Choisir un niveau de qualité</option>
+                                                  <option value="0.3">1 - Très basse (30%)</option>
+                                                  <option value="0.4">2 - Basse (40%)</option>
+                                                  <option value="0.5">3 - Moyenne (50%)</option>
+                                                  <option value="0.6">4 - Haute(60%)</option>
+                                                  <option value="0.7">5 - Très Haute(70%)</option>
+                                                </select>
+                                                <button type="button" class="btn btn-secondary btn-block" :disabled="!quality || currentFolder.productImagesSmall.length === 0" v-on:click="optimize()">Vérifier la qualité</button>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          <div class="tab-pane fade p-4" id="texte-tab-pane" role="tabpanel" aria-labelledby="texte-tab" tabindex="0">
+                                            <h6 class="text-center mb-4 text-muted">TITRE & DESCRIPTIONS</h6>
+                                            <div v-if="currentFolder">
+                                              <div class="row">
+                                                <div class="col-md-12">
+                                                  <p><strong>NB:</strong><span class="text-muted"> Les textes ne dépassent pas les 140 caractères.</span></p>
+                                                </div>
+                                              </div>
+                                              <div class="row mb-3">
+                                                <div class="col-md-6" >
+                                                  <div class="btn-toolbar border mb-3">  
+                                                    <div class="btn-group">  
+                                                      <input type="radio" class="btn-check" id="option1" v-model="currentFolder.dataTitleAlign" value="left" v-on:change="onChanged"/>
+                                                      <label class="btn btn-sm btn-outline-secondary border-light" for="option1">                                                                
+                                                        <i class="fa fa-align-left" aria-hidden="true"></i>
+                                                      </label>
+
+                                                      <input type="radio" class="btn-check" id="option2" v-model="currentFolder.dataTitleAlign" value="center" v-on:change="onChanged"/>
+                                                      <label class="btn btn-sm btn-outline-secondary border-light" for="option2">                                                                
+                                                        <i class="fa fa-align-center" aria-hidden="true"></i>
+                                                      </label>
+
+                                                      <input type="radio" class="btn-check" id="option3" v-model="currentFolder.dataTitleAlign" value="right" v-on:change="onChanged"/>
+                                                      <label class="btn btn-sm btn-outline-secondary border-light" for="option3">                                                                
+                                                        <i class="fa fa-align-right" aria-hidden="true"></i>
+                                                      </label>   
+                                                      <input type="checkbox" class="btn-check" id="btn-check-bold" true-value="bold" false-value="400" v-model="currentFolder.dataTitleBold" v-on:change="onChanged">
+                                                      <label class="btn  btn-sm btn-outline-secondary border-light" for="btn-check-bold"><span class="fa fa-bold"></label>
+                                                        <input type="checkbox" class="btn-check" id="btn-check-italic" true-value="italic"  false-value="normal" v-model="currentFolder.dataTitleItalic" v-on:change="onChanged">
+                                                        <label class="btn  btn-sm btn-outline-secondary border-light" for="btn-check-italic"><span class="fa fa-italic"></label>        
+                                                          <select class="form-select form-select-sm rounded-end rounded-0 border-light" v-model="currentFolder.dataTitleSize" v-on:change="onChanged">
+                                                            <option value="16px" selected>16px</option>
+                                                            <option value="20px">20px</option>
+                                                            <option value="24px">24px</option>
+                                                            <option value="28px">28px</option>
+                                                            <option value="32px">32px</option>
+                                                          </select>                                                               
+                                                        </div> 
+                                                      </div>
+                                                      <div class="input-block" v-if="currentFolder.dataTitle">
+                                                        <input type="text" maxlength="140"  name="title-fr" id="title-fr" spellcheck="false" v-model="currentFolder.dataTitle[0]" v-on:change="onChanged" />
+                                                        <span class="placeholder">
+                                                          Titre 
+                                                        </span>
+                                                      </div>
+                                                    </div>
+
+                                                  </div>
+                                                  <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                      <div class="d-flex align-items-center justify-content-between">
+                                                        <label class="form-label">Couleur premier plan</label>
+                                                        <input class="form-control p-0" type="color" v-model="color" v-on:change="onChanged" style="width: 34px;">
+                                                      </div>
+                                                      <div class="d-flex align-items-center justify-content-between">
+                                                        <label class="form-label">Couleur arrière plan</label>
+                                                        <input class="form-control p-0" type="color" v-model="foreground"
+                                                        v-on:change="onChanged" style="width: 34px;">
+                                                      </div>
+                                                    </div>  
+                                                  </div>
+                                                </div>
+                                                <div class="row">
+                                                  <div class="col-md-6">
+                                                    <div class="btn-toolbar border mb-3">  
+                                                      <div class="btn-group">  
+                                                        <input type="radio" class="btn-check" id="option4" v-model="currentFolder.dataDescAlign" value="left" v-on:change="onChanged"/>
+                                                        <label class="btn btn-sm btn-outline-secondary border-light" for="option4">                                                                
+                                                          <i class="fa fa-align-left" aria-hidden="true"></i>
+                                                        </label>
+
+                                                        <input type="radio" class="btn-check" id="option5" v-model="currentFolder.dataDescAlign" value="center" v-on:change="onChanged"/>
+                                                        <label class="btn btn-sm btn-outline-secondary border-light" for="option5">                                                                
+                                                          <i class="fa fa-align-center" aria-hidden="true"></i>
+                                                        </label>
+
+                                                        <input type="radio" class="btn-check" id="option6" v-model="currentFolder.dataDescAlign" value="right" v-on:change="onChanged"/>
+                                                        <label class="btn btn-sm btn-outline-secondary border-light" for="option6">                                                                
+                                                          <i class="fa fa-align-right" aria-hidden="true"></i>
+                                                        </label>
+
+                                                        <input type="checkbox" class="btn-check" id="btn-check-desc-bold" true-value="bold" false-value="400" v-model="currentFolder.dataDescBold" v-on:change="onChanged">
+                                                        <label class="btn btn-sm btn-outline-secondary border-light" for="btn-check-desc-bold"><span class="fa fa-bold"></span></label>
+                                                        <input type="checkbox" class="btn-check" id="btn-check-desc-italic" true-value="italic"  false-value="normal" v-model="currentFolder.dataDescItalic" v-on:change="onChanged">
+                                                        <label class="btn btn-sm btn-outline-secondary border-light" for="btn-check-desc-italic"><span class="fa fa-italic"></span></label>        
+                                                        <select class="form-select form-select-sm rounded-end rounded-0 border-light" v-model="currentFolder.dataDescSize" v-on:change="onChanged">
+                                                          <option value="12px" selected>12px</option>
+                                                          <option value="14px">14px</option>
+                                                          <option value="16px">16px</option>
+                                                          <option value="24px">20px</option>
+                                                        </select>     
+                                                      </div> 
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                <div class="row g-2 mb-2" v-for="(item, idx) in currentFolder.dataDescriptions">
+                                                  <div class="col-md-6">
+                                                    <div class="input-block" v-if="currentFolder.dataTitle">
+                                                      <input id="description2-fr" v-model="item.description" type="text" maxlength="140"  v-on:change="onChanged" class="form-control" />
+                                                      <span class="placeholder">
+                                                        Description
+                                                      </span>
+                                                    </div>
+                                                  </div>
+
+                                                  <div class="col-md-3">
+                                                    <div class="input-block" v-if="currentFolder.dataTitle">
+                                                      <input id="description2-fr-start" v-model="item.start" type="text" maxlength="140" @focus="handleFocus"
+                                                      v-on:change="(e) => handleChangeStart(e, item,idx)" class="form-control" :disabled="idx === 0"/>
+                                                      <span class="placeholder">
+                                                        De la photo
+                                                      </span>
+                                                    </div>
+                                                  </div>
+
+                                                  <div class="col-md-3">
+                                                    <div class="input-block" v-if="currentFolder.dataTitle">
+                                                      <input id="description2-fr-end" v-model="item.end" type="text" maxlength="140" @focus="handleFocus"
+                                                      v-on:change="(e) => handleChangeEnd(e, item,idx)" class="form-control" />
+                                                      <span class="placeholder">
+                                                        à la photo
+                                                      </span>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="tab-pane fade p-4" id="pdtLink-tab-pane" role="tabpanel" aria-labelledby="pdtLink-tab" tabindex="0">
+                                                <h6 class="text-center mb-4 text-muted">LIENS DU PRODUIT</h6>
+                                                <!-- Début de l'alerte pour la version autonome -->
+                                                <div class="alert alert-warning mt-4" role="alert">
+                                                  En version autonome, seulement le fichier à téléchargé et l’enregistrement audio peuvent être utilisés. Les liens ne sont pas disponibles.
+                                                </div>
+                                                <!-- Fin de l'alerte pour la version autonome -->
+                                                <div v-if="currentFolder.dataSpecification">
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 1024 1024"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zM432 456c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Fichier à télécharger" class="form-control me-2" maxlength="140"  v-model="currentFolder.dataSpecification.download.name"
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Fichier à télécharger</label>
+                                                    </div>
+                                                    <div class="input-group-append" role="button" v-on:click="importData(currentFolder.dataSpecification, 'download')">
+                                                      <span class="input-group-text" id="basic-addon2"><i class="fa fa-file"></i></span>
+                                                    </div>
+                                                  </div>
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3zM412.6 181.5C434.1 199.1 448 225.9 448 256s-13.9 56.9-35.4 74.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C393.1 284.4 400 271 400 256s-6.9-28.4-17.7-37.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Enregistrement audio" class="form-control me-2" maxlength="140"  v-model="currentFolder.dataSpecification.audio.name"
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Enregistrement audio</label>
+                                                    </div>
+                                                    <div class="input-group-append" role="button" v-on:click="importData(currentFolder.dataSpecification, 'audio')">
+                                                      <span class="input-group-text" id="basic-addon2"><i class="fa fa-file"></i></span>
+                                                    </div>
+                                                  </div>
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128zM559.1 99.8c10.4 5.6 16.9 16.4 16.9 28.2V384c0 11.8-6.5 22.6-16.9 28.2s-23 5-32.9-1.6l-96-64L416 337.1V320 192 174.9l14.2-9.5 96-64c9.8-6.5 22.4-7.2 32.9-1.6z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Vidéo du produits" class="form-control me-2" maxlength="140"  v-model="currentFolder.dataSpecification.video.name"
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Vidéo Youtube du produit</label>
+                                                    </div>
+                                                  </div>
+                                                  <div class="d-flex align-items-center justify-content-between"> 
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Lien internet ou Fichier local" class="form-control me-2" maxlength="140"  v-model="currentFolder.dataSpecification.lien.name"
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Lien internet</label>
+                                                    </div>
+                                                  </div>
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M24 0C10.7 0 0 10.7 0 24S10.7 48 24 48H76.1l60.3 316.5c2.2 11.3 12.1 19.5 23.6 19.5H488c13.3 0 24-10.7 24-24s-10.7-24-24-24H179.9l-9.1-48h317c14.3 0 26.9-9.5 30.8-23.3l54-192C578.3 52.3 563 32 541.8 32H122l-2.4-12.5C117.4 8.2 107.5 0 96 0H24zM176 512c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm336-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Lien internet relatif au produits" class="form-control me-2" maxlength="140"  v-model="currentFolder.dataSpecification.shopping.name"
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Lien pour commander</label>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                              <div class="tab-pane fade p-4" id="compaLink-tab-pane" role="tabpanel" aria-labelledby="compaLink-tab" tabindex="0">
+                                                <h6 class="text-center mb-4 text-muted">LIENS DE L'ENTREPRISE</h6>
+                                                <!-- Début de l'alerte pour la version autonome -->
+                                                <div class="alert alert-warning mt-4" role="alert">
+                                                  En version autonome, les liens ne seront pas disponibles.
+                                                </div>
+                                                <!-- Fin de l'alerte pour la version autonome -->
+                                                <div v-if="currentFolder.dataCommunication">
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Adresse courriel" class="form-control me-2" maxlength="140"  v-model="currentFolder.dataCommunication[0].email"
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Adresse courriel</label>
+                                                    </div>
+                                                  </div>
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Page de l’entreprise" class="form-control me-2" maxlength="140" 
+                                                      v-model="currentFolder.dataCommunication[0].website" 
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Page de l’entreprise</label>
+                                                    </div>
+                                                  </div>
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M0 128C0 92.7 28.7 64 64 64H320c35.3 0 64 28.7 64 64V384c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V128zM559.1 99.8c10.4 5.6 16.9 16.4 16.9 28.2V384c0 11.8-6.5 22.6-16.9 28.2s-23 5-32.9-1.6l-96-64L416 337.1V320 192 174.9l14.2-9.5 96-64c9.8-6.5 22.4-7.2 32.9-1.6z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Vidéo du produits" class="form-control me-2" maxlength="140" 
+                                                      v-model="currentFolder.dataCommunication[0].videoURL" 
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Vidéo Youtube de l'entreprise</label>
+                                                    </div>
+                                                  </div>
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0S96 57.3 96 128s57.3 128 128 128zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Page contact" class="form-control me-2" maxlength="140" 
+                                                      v-model="currentFolder.dataCommunication[0].contactPage" 
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Page contact</label>
+                                                    </div>
+                                                  </div>
+                                                  <div class="d-flex align-items-center justify-content-between">
+                                                    <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M347.1 24.6c7.7-18.6 28-28.5 47.4-23.2l88 24C499.9 30.2 512 46 512 64c0 247.4-200.6 448-448 448c-18 0-33.8-12.1-38.6-29.5l-24-88c-5.3-19.4 4.6-39.7 23.2-47.4l96-40c16.3-6.8 35.2-2.1 46.3 11.6L207.3 368c70.4-33.3 127.4-90.3 160.7-160.7L318.7 167c-13.7-11.2-18.4-30-11.6-46.3l40-96z"/></svg>
+                                                    <div class="form-group">
+                                                      <input type="text" placeholder="Téléphone" class="form-control me-2" maxlength="140" 
+                                                      v-model="currentFolder.dataCommunication[0].telephone" 
+                                                      v-on:change="onChanged"/>
+                                                      <label class="form-label">Téléphone</label>
+                                                    </div>
+                                                  </div>
+
+                                                </div>
+                                              </div>
+                                              <div class="tab-pane fade p-4" id="lastStep-tab-pane" role="tabpanel" aria-labelledby="lastStep-tab" tabindex="0">
+                                                <h6 class="text-center mb-4 text-muted">TELECHARGEMENT ANIMATION 360PIK</h6>
+                                                <b>Télécharger pour :</b>
+                                                <section class="service-categories text-xs-center">
+                                                  <div class="container">
+                                                    <div class="row text-center">
+                                                     <div class="col-md-12 mb-2">
+                                                      <div class="form-group">
+                                                        <input type="text" placeholder="Lien internet ou Fichier local" class="form-control me-2" maxlength="140"  v-model="currentFolder.filename"
+                                                        v-on:change="onChanged" style="border: 3px solid lightblue;"/>
+                                                        <label class="form-label">Nom du produit</label>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-2">
+                                                      <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="openConfirmModal('WEB'); " v-bind:style="currentFolder.filename == '' ? 'pointer-events: none;' : 'pointer-events: visible;'" :disabled="!currentFolder.filename">
+                                                        <div class="card-block d-flex justify-content-center align-items-center">
+                                                          <span class="fa fa-globe fa-2x" style="margin-right:20px;"></span>
+                                                          <h4 class="card-title">Version Web</h4>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-2">
+                                                      <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="openConfirmModal('COMPANY');" v-bind:style="currentFolder.filename == '' ? 'pointer-events: none;' : 'pointer-events: visible;'" :disabled="!currentFolder.filename">
+                                                        <div class="card-block d-flex justify-content-center align-items-center">
+                                                          <span class="fa fa-desktop fa-2x" style="margin-right:20px;"></span>
+                                                          <h4 class="card-title">Version Représentant</h4>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                        <!-- <div class="col-md-6 mb-2">
+                                                            <div class="card service-card card-inverse text-secondary" role="button" v-on:click="openConfirmModal('COMPANY')" v-bind:style= "currentFolder.filename == '' ? 'pointer-events: none;' : 'pointer-events: visible;'">
+                                                                <div class="card-block d-flex justify-content-between align-items-center">
+                                                                    <span class="fa fa-user fa-2x"></span>
+                                                                    <h4 class="card-title">Représentant</h4>
+                                                                </div>
+                                                            </div>
+                                                          </div> -->
+
+                                                          <div class="col-md-6 mb-2">
+                                                            <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="resetObj()">
+                                                              <div class="card-block d-flex justify-content-center align-items-center">
+                                                                <span class="fa fa-plus fa-2x" style="margin-right:20px;"></span>
+                                                                <h4 class="card-title">Nouvelle animation</h4>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="col-md-6 mb-2">
+                                                            <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="quit()">
+                                                              <div class="card-block d-flex justify-content-center align-items-center">
+                                                                <span class="fa fa-close fa-2x" style="margin-right:20px;"></span>
+                                                                <h4 class="card-title">Quitter 360PIK</h4>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                        <!--End Row-->
+                                                      </div>
+                                                    </section>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            <div class="col-md-4 p-2" v-if="currentFolder.productImagesSmall.length > 0">
+                                              <div id="cont" :style="{background: foreground}" >
+                                              </div>
+                                            </div>
+                                            <div class="col-md-4 p-2" v-if="currentFolder.productImagesSmall.length === 0">
+                                             <img src="./assets//icons//Image_not_available.jpeg" style="width: 100%;"/>
+                                           </div>
+                                           <div class="col-md-12">
+
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <!-- Button trigger modal -->
+                                       <div id="myModal" class="modal fade" data-bs-backdrop="false">
+                                        <div class="modal-dialog">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h4 class="modal-title">
+                                                Guides - 
+                                                <a href="https://revolutionnez.ca/informations" target="_blank">Informations importantes</a>
+                                              </h4>
+                                              <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true"
+                                              style="border-radius: 0.25rem;">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                              <h4 v-text="selectedOnglet.title"></h4>
+                                              <p v-html="selectedOnglet.description"></p>
+                                            </div>
+                                          </div>
+                                          <!-- /.modal-content -->
+                                        </div>
+                                        <!-- /.modal-dialog -->
+                                      </div>
+                                      <div class="modal modal-lg fade" id="confirmModal" data-bs-backdrop="false">
+                                        <div class="modal-dialog">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h4 class="modal-title">Confirmation de téléchargement</h4>  
+                                              <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                                            </div>
+                                            <div class="modal-body">
+                                              <p>Vous avez <b v-text="imagesCount"></b> images à télécharger</p>
+                                              <p>Aspect Ratio : <b v-text="execute ? 'Tous les ratios sont biens' : 'La (H) des images doivent être moins que (L)'"></b></p>
+                                            </div>
+                                            <div class="modal-footer d-flex justify-content-between align-items-center">
+                                              <button type="button" class="btn btn-primary" data-bs-dismiss="modal"  aria-hidden="true">Annuler</button>
+                                              <button type="button" class="btn btn-secondary" v-on:click="uploadImages">Continuer le téléchargement</button>
+                                            </div>
+
+                                          </div>
+                                          <!-- /.modal-content -->
+                                        </div>
+                                        <!-- /.modal-dialog -->
+                                      </div>
+                                      <div class="modal modal-lg fade" id="downloadModal" data-bs-backdrop="false" style="max-width: 100% !important;">
+                                        <div class="modal-dialog" style="max-width: 45% !important;">
+                                          <div class="modal-content">
+                                            <div class="modal-header">
+                                              <h4 class="modal-title">Confirmation de téléchargement</h4>  
+                                              <button type="button" class="close" style="border-radius: 0.25rem;" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                                            </div>
+                                            <div class="modal-body" style="width: 100%;">
+                                              <form id="confirm" v-if="!isDownLoading">
+                                                <div class="form-group">
+                                                  <div style="overflow: hidden;">
+                                                    <iframe 
+                                                    sandbox="allow-scripts allow-same-origin allow-popups allow-top-navigation allow-popups-to-escape-sandbox" 
+                                                    src="https://zc.vg/sf/KXIAF" 
+                                                    loading="lazy"
+                                                    style="width: 105%; height: 550px; border: none; margin-left: -2.5%; margin-top: -2.5%;">
+                                                  </iframe>
+                                                </div>
+
+                                              </div>
+                                            </form>
+
+                                            <div class="loading border mt-2 p-3 bg-light d-flex justify-content-between align-items-center" v-if="isDownLoading">
+                                              <div>
+                                                <h6>{{ downloadMessage }}</h6>
+                                                <div class="progress" style="width: 100%;">
+                                                  <div class="progress-bar"
+                                                  role="progressbar"
+                                                  :style="{ width: animationDownloadProgress + '%' }"
+                                                  :aria-valuenow="animationDownloadProgress"
+                                                  aria-valuemin="0"
+                                                  aria-valuemax="100">
+                                                  Animation : {{ animationDownloadProgress }}%
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <!-- Dans le "modal-footer" -->
+                                        <div class="modal-footer d-flex justify-content-between align-items-center">
+                                          <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-hidden="true" :disabled="isDownLoading">Annuler</button>-->
+                                          <!--<button type="button" class="btn btn-secondary" v-on:click="generateAnimation" :disabled="isDownLoading">Télécharger</button>-->
+                                          <button type="button" class="btn btn-secondary" :disabled="isDownLoading" @click="generateAndSubmit">Télécharger</button>
+
+                                        </div>
+
+                                      </div>
+                                      <!-- /.modal-content -->
+                                    </div>
+                                    <!-- /.modal-dialog -->
+                                  </div>
+                                  <div class="modal modal-fullscreen fade" id="optimisationModal" data-bs-backdrop="false" style="max-width: 100% !important;">
+                                    <div class="modal-dialog" style="max-width: 100% !important;">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h6 class="modal-title">Test d'optimization</h6>  
+                                          <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true" style="border-radius: 0.25rem;">&times;</button>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                          <h5 v-text="originalSizes[0]"></h5>
+                                          <h5 v-text="compressedSize"></h5>
+                                          <div id="canvas"></div>
+                                        </div>
+                                        <div class="modal-footer d-flex justify-content-between align-items-center">
+                                          <button type="button" style="border-radius: 0.25rem;" class="btn btn-secondary" data-bs-dismiss="modal"  aria-hidden="true">Annuler</button>
+                                        </div>
+                                      </div>
+                                      <!-- /.modal-content -->
+                                    </div>
+                                    <!-- /.modal-dialog -->
+                                  </div>
+
+
+                                  <div class="position-fixed d-none container" id="assets-modal" style="top: 20%; left: 15%; z-index: 9999;">
+                                    <div class="table w-full h-full">
+                                      <div class="table-cell align-middle">
+                                        <div
+                                        class="position-relative mx-auto p-5 border w-fit shadow-lg rounded-md bg-white"
+                                        id="videoWrapper"
+                                        >
+                                        <video
+                                        style="width: 100%"
+                                        controls
+                                        id="videoElement"
+                                        class="d-none"
+                                        ></video>
+
+                                        <audio
+                                        controls
+                                        id="audioElement"
+                                        class="d-none"
+                                        style="width: 100%"
+                                        ></audio>
+
+                                        <div
+                                        id="cross"
+                                        class="position-absolute  bg-white border rounded p-2 text-sm font-bold text-center"
+                                        style="top: 0px; right: 0px; cursor: pointer;"
+                                        v-on:click="hideVideoOrAudio()"
+                                        >
+                                        X
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div id="dynamic-gallery-demo"></div>
+                            </div>
+
+                            <!-- /.modal -->
+
+                            <script src="./js/jquery-3.3.1.min.js" type='text/javascript'></script>
+                            <script src="./js/jquery-ui.js" type='text/javascript'></script>
+                            <script src="./js/bootstrap.bundle.min.js"></script>
+                            <script src='./js/spritespin.js' type='text/javascript'></script>
+                            <script src="https://www.cssscript.com/demo/drag-drop-sortablejs/Sortable.js"></script>
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"></script>
+                            <script src="https://cdn.jsdelivr.net/picturefill/2.3.1/picturefill.min.js"></script>
+                            <script src="./js/lightgallery/lightgallery.js"></script>
+                            <script src="./js/lightgallery/lg-pager.js"></script>
+                            <script src="./js/lightgallery/lg-autoplay.js"></script>
+                            <script src="./js/lightgallery/lg-fullscreen.js"></script>
+                            <script src="./js/lightgallery/lg-zoom.js"></script>
+                            <script src="./js/lightgallery/lg-hash.js"></script>
+                            <script src="./js/lightgallery/lg-share.js"></script>
+                            <script src="./js/lightgallery/lg-rotate.js"></script>
+                            <script type="module" src="./js/revolutionnez.js"></script>
+                            <script src='./js/main.js' type='text/javascript'></script>
+                            <script src='./js/jszip.min.js' type='text/javascript'></script>
+                            <script src='./demos.js' type='text/javascript'></script>
+                            <script type="module">
+                              import render360 from "./js/revolutionnez.js";
+                              
+                              const { createApp, reactive, getCurrentInstance } = Vue
+
+                              const state = reactive({
+                                modal_confirm: null,
+                                modal_optimization: null,
+                                modal_download: null,
+                              })
+                              const TABS = {
+                                IMAGE: {
+                                  title: "L'onglet Images & contrôles:",
+                                  description: `
+                                  <ul>
+                                  <li>1. Téléversez vos images de produit en cliquant la partie pointillée ou en glissant et en déposant</li>
+                                  <li>2. Un délai est nécessaire pour le chargement des photos à cause du travail des photos</li>
+                                  <li>3. Au besoin, glisser et déposer les vignettes de vos photos pour les mettre dans l’ordre désiré afin de</li>
+                                  commencer à créer votre animation 360.
+                                  <li>4. Appuyez sur le bouton Images de détails de votre produit, chaque produit a des avantages particuliers</li>
+                                  à mettre de l’avant, profitez des quelques photos supplémentaires.
+                                  <li>5. Au besoin, vous pouvez changer l’ordre de présentation des photos</li>
+                                  <li>6. Sélectionnez le nombre de rotation au démarrage de l’animation entre 0, 1, 2 et 3 de l’animation</li>
+                                  intégrée à votre site Web
+                                  <li>7. Bougez le curseur pour régler la vitesse de rotation de votre animation, le temps est affiché en</li>
+                                  secondes.
+                                  <li>8. Portez attention à ce que les photos suivent le déplacement de la souris dans la partie exemple qui se</li>
+                                  trouve à droite. Utilisez le bouton Inverser pour inverser dans le sens de rotation, au besoin.
+                                  <li>9. Choisir une des deux barres de contrôle, la vitesse et le sens de rotation.</li>
+                                  </ul>
+                                  `
+                                },
+                                PAID_OPTIONS: {
+                                  title: "L'onglet Optimisation des photos",
+                                  description: `
+                                  <ul>
+                                  <li>1. Cet onglet propose des services payants :</li>
+                                  <li>2. Optimisation en compressant les photos avec une perte limitée.</li>
+                                  <li>3. Choisir le niveau de qualité</li>
+                                  <li>4. Tester l’optimisation</li>
+                                  <li>5. Création d'un GIF animé pour vos médias sociaux.</li>
+                                  <li>6. Création d'une vidéo au format MP4 pour vos médias sociaux.</li>
+                                  <li>7. Vous avez deux choix de paiement, soit de payer directement la totalité de la facture ou de faire une
+                                  avance, qui sera débitée à chaque utilisation.</li>
+                                  </ul>
+                                  `
+                                },
+                                TEXT: {
+                                  title: "L'onglet Titre et descriptions",
+                                  description: `
+                                  <ul>
+                                  <li>1. Sélectionnez l'alignement, police en gras ou en italique de même que la taille de la police.</li>
+                                  <li>2. Choisissez un titre</li>
+                                  <li>3. Sélectionnez la couleur de premier plan et la couleur de l'arrière-plan.</li>
+                                  <li>4. Décrivez en quelques lignes de présentation pour mettre en relief les avantages compétitifs.
+                                  <ul>
+                                  <li>1. La limite de texte est de 140 caractères.</li>
+                                  <li>2. Sélectionnez la page des photos ou le texte sera présenté</li>
+                                  <li>3. Vous avez la possibilité de rédiger 8 textes maximum répartis sur l’ensemble des photos de la
+                                  rotation.</li>
+                                  </ul>
+                                  </li>
+                                  </ul>
+                                  `
+                                },
+                                PRODUCT_LINKS: {
+                                  title: "L'onglet des liens du produit",
+                                  description: `
+                                  <ul>
+                                  <li>1. Offrez plus d’information au sujet de votre produit en utilisant les liens disponibles
+                                  <ul>
+                                  <li>1. Lien vers le téléchargement d'un document.</li>
+                                  <li>2. Lien vers une vidéo relative au produit, YouTube</li>
+                                  <li>3. Lien vers un fichier audio local relatif au produit</li>
+                                  <li>4. Lien vers une page plus spécifique du produit.</li>
+                                  <li>5. Lien vers une boutique en ligne ou une facture offerte par un service de paiement en ligne.</li>
+                                  </ul>
+                                  </li>
+                                  </ul>
+                                  `
+                                },
+                                COMPANY_LINKS: {
+                                  title: "L'onglet Liens de l'entreprise",
+                                  description: `
+                                  <ul>
+                                  <li>1. Offrez une meilleure communication avec votre entreprise
+                                  <ul>
+                                  <li>1. Lien pour que les utilisateurs vous envoient des courriels. (Entrez votre adresse courriel)</li>
+                                  <li>2. Lien vers un formulaire ou une page de contact.</li>
+                                  <li>3. Numéro de téléphone de référence utilisable directement à partir d’un cellulaire.</li>
+                                  <li>4. Lien vers une page spécifique de l'entreprise.</li>
+                                  <li>5. Lien vers une vidéo YouTube de présentation de votre l'entreprise.</li>
+                                  </ul>
+                                  </ul>
+                                  `
+                                },
+                                DOWNLOADING: {
+                                  title: "L'onglet Téléchargement Animation 360PIK",
+                                  description: `
+                                  <ul>
+                                  <li>1. La partie à droite présente la version finale pour vérification.</li>
+                                  <li>2. En appuyant sur un des boutons, Site Web ou Représentant :
+                                  <ul>
+                                  <li>1. Tous les documents nécessaires à son fonctionnement seront préparés, compressés et
+                                  téléchargés sur votre poste de travail. Après la décompression, l'animation 360° du produit, qui se
+                                  trouvera sur votre appareil, sera fonctionnelle.</li>
+                                  <li>2. Avec le bouton Représentants, vous pouvez présenter vos produits l’utilisation sans lien Internet.
+                                  Après la décompression, l'animation 360° du produit sera fonctionnelle et peut être utilisée sans
+                                  connexion à Internet en tant qu’outils indispensables pour vos représentants.</li>
+                                  <li>3. Un fichier readme.txt vous donnera les informations pour l'intégration de vote produit à un site web.</li>
+                                  </ul>
+                                  </li>
+                                  </ul>
+                                  `
+                                }
+                              }
+                              createApp({
+                                data: () => {
+                                  return {
+                                    enabled: true,
+                                    dragging: false,
+                                    currentFolder: demos[0],
+                                    imagess: [],
+                                    listOfIndex: [],
+                                    detailListOfIndex: [],
+                                    mode: "",
+                                    imagesCount: 0,
+                                    isLoading: false,
+                                    message: [0, 1, 2],
+                                    selectedTab: 0,
+                                    imageType: "PRODUCT",
+                                    color: "#6c757d",
+                                    colorFstPlan: "#808080",
+                                    colorBackground: "#ffffff",
+                                    foreground: "#ffffff",
+                                    alignment: "left",
+                                    selectedOnglet: TABS.IMAGE,
+                                    images: [],
+                                    execute: true,
+                                    formData: new FormData(),
+                                    openConfirmation: false,
+                                    quality: 0,
+                                    optimizedImg: null,
+                                    frameTime: 130,
+                                    total: 0,
+                                    originalSizes: [],
+                                    compressedSize: null,
+                                    inverseState: false,
+                                    imagesToUpload:[],
+                                    type: "",
+                                    isDownLoading: false,
+                                    folders: demos,
+                                    animationDownloadProgress: 0,
+                                    gifDownloadProgress: 0,
+                                    videoDownloadProgress: 0,
+                                    downloadMessage: "Téléchargement de l'animation en cours...",
+                // reverseButtonEventAdded: false,
+                                    rotationMessage: 'Orientation normale',
+                                    formSubmitted: false
+                                  }
+                                },
+
+                                mounted() {
+                                  state.modal_confirm = new bootstrap.Modal('#confirmModal', {})
+                                  state.modal_optimization = new bootstrap.Modal('#optimisationModal', {})
+                                  state.modal_download = new bootstrap.Modal('#downloadModal', {})
+
+                                  this.listOfIndex = this.currentFolder.productImagesLarge.map(({}, idx) => idx)
+                                  this.detailListOfIndex = this.currentFolder.detailsImages.map(({}, idx) => idx)
+                                  new Sortable(document.getElementById('gridDemo'), {
+                                    animation: 150,
+                                    ghostClass: 'blue-background-class',
+                // Element dragging ended
+                                    onEnd:(evt) => this.changeOrder(evt),
+                                  });
+                                  new Sortable(document.getElementById('gridDemo2'), {
+                                    animation: 150,
+                                    ghostClass: 'blue-background-class',
+                                    onEnd:(evt) => {
+                                      this.detailListOfIndex.splice(evt.newIndex, 0, this.detailListOfIndex.splice(evt.oldIndex, 1)[0]);
+                                      this.refresh();
+                                    },
+                                  });
+
+                                  this.refresh();
+
+                                },
+                                computed: {
+                                  itemsLength() {
+                                    return this.currentFolder.productImagesSmall.length
+                                  }
+                                },
+                                watch:{
+                                  itemsLength(newVal, oldVal){
+                                    if(newVal !== oldVal)
+                                      this.refresh()
+                                  },
+                                  'currentFolder.productImg': function (newVal, oldVal){
+                                   const price = (this.currentFolder.productImagesLarge.length*0.20).toFixed(2);
+                                   if(newVal) this.total = (Number(this.total) + Number(price)).toFixed(2);
+                                   else this.total= (Number(this.total) - Number(price)).toFixed(2);
+                                 },
+                                 'currentFolder.detailImg': function (newVal, oldVal){
+                                   const price = (this.currentFolder.detailsImages.length*0.20).toFixed(2);
+                                   if(newVal) this.total = (Number(this.total) + Number(price)).toFixed(2);
+                                   else this.total= (Number(this.total) - Number(price)).toFixed(2);
+                                 },
+                                 'currentFolder.hasGif': function (newVal, oldVal){
+                                   if(newVal) this.total = (Number(this.total) + 2.00).toFixed(2);
+                                   else this.total= (Number(this.total) - 2.00).toFixed(2);
+                                 },
+                                 'currentFolder.hasVideo': function(newVal, oldVal){
+                                  if(newVal) this.total = (Number(this.total) + 2.00).toFixed(2);
+                                  else this.total= (Number(this.total) - 2.00).toFixed(2);
+                                },
+                              },
+                              methods: {
+                                resetObj(){
+                                  if (confirm("Êtes-vous sûr de vouloir faire une autre animation ?")) {
+                                    window.location.reload();
+                                  }
+
+                                },
+                                generateAndSubmit() {
+                                  this.generateAnimation();
+                                },
+                                updateSpriteSpin() {
+                                  let images = this.currentFolder.productImagesLarge;
+                                  this.updateSpriteSpinWithImages(images);
+                                },
+                                updateSpriteSpinWithImages(images) {
+                                  const api = $(spritescontainerSelector).spritespin('api');
+                                  api.destroy();
+                                  $(spritescontainerSelector).spritespin({
+                                    source: images,
+        // Autres options de configuration ici, comme dans votre code précédent...
+                                  });
+                                },
+                                onFormSubmit(e) {
+                                  e.preventDefault();
+    // Logique pour traiter le formulaire...
+    // Par exemple, envoie le formulaire via AJAX, etc.
+    // Ensuite, démarrez l'animation de téléchargement
+                                  this.openConfirmModal('COMPANY');
+                                  this.openConfirmModal('WEB');
+                                },
+                                handleFocus(event) {
+                                  event.target.value = "";
+                                },
+                                quit(){
+                                  this.currentFolder=initialValues;
+                                },
+                                checkMove: function(e) {
+                                  window.console.log("Future index: " + e.draggedContext.futureIndex);
+                                },
+                                showVideoOrAudio(){
+                                  $("#assets-modal").removeClass( "d-none" ).addClass( "d-block" );
+                                },
+                                hideVideoOrAudio(){
+                                  $("#assets-modal").removeClass( "d-block" ).addClass( "d-none" );
+                                },
+                                changeOrder(evt){
+                                  this.listOfIndex.splice(evt.newIndex, 0, this.listOfIndex.splice(evt.oldIndex, 1)[0]);
+                                  this.refresh();
+                                },
+                                move(input, from, to) {
+                                  const temp = this.currentFolder.productImagesLarge[from];
+                                  this.currentFolder.productImagesLarge[from] = this.currentFolder.productImagesLarge[to];
+                                  this.currentFolder.productImagesLarge[to] = temp;
+                                },
+                                openModal()
+                                {
+                                  state.modal_confirm.show()
+                                },
+                                hideModal()
+                                {
+                                  state.modal_confirm.hide()
+                                },
+                                openConfirmModal(type){
+                                  if (!this.currentFolder.filename) {
+    // Nom du répertoire est vide. Ne faites rien.
+                                    return;
+                                  }
+                                  this.type = type;
+                                  state.modal_download.show();
+                                  console.log("Type : ", this.type)
+                                },
+                                hideConfirmModal(){
+                                  this.type = "";
+                                  state.modal_download.hide()
+                                },
+                                refresh() {
+            // console.log(this.listOfIndex);
+
+                                  const images = this.listOfIndex.map((pos) => this.currentFolder.productImagesSmall[pos]);
+                                  const imagesLarge = this.listOfIndex.map((pos) => this.currentFolder.productImagesLarge[pos]);
+                                  const imagesDetails = this.detailListOfIndex.map((pos) => this.currentFolder.detailsImages[pos]);
+                                  if (this.currentFolder.continous == true) {
+                                    $("#loopsSections").hide();
+                                  } else {
+                                    $("#loopsSections").show();
+                                  }
+                                  $("#cont").html('<div class="360spin"></div>');
+
+                                  $('.360spin').html('');
+
+                                  $('.360spin').attr('data-color', this.color);
+                                  $('.360spin').attr('data-foreground', this.foreground);
+                                  $('.360spin').attr('data-titlealignment', this.currentFolder.dataTitleAlign);
+                                  $('.360spin').attr('data-descalignment', this.currentFolder.dataDescAlign);
+                                  $('.360spin').attr('data-titlebold', this.currentFolder.dataTitleBold);
+                                  $('.360spin').attr('data-titleitalic', this.currentFolder.dataTitleItalic);
+                                  $('.360spin').attr('data-titlesize', this.currentFolder.dataTitleSize);
+                                  $('.360spin').attr('data-descbold', this.currentFolder.dataDescBold);
+                                  $('.360spin').attr('data-descitalic', this.currentFolder.dataDescItalic);
+                                  $('.360spin').attr('data-descsize', this.currentFolder.dataDescSize);
+                                  $('.360spin').attr('data-height', this.currentFolder.dataHeight);
+                                  $('.360spin').attr('data-width', this.currentFolder.dataWidth);
+                                  $('.360spin').attr('data-folder', this.currentFolder.dataFolder);
+                                  $('.360spin').attr('data-zoom', this.currentFolder.dataZoom);
+                                  $('.360spin').attr('data-naming', this.currentFolder.dataNaming);
+                                  $('.360spin').attr('data-count', JSON.stringify(this.currentFolder.dataCount));
+                                  $('.360spin').attr('data-slidercontrol', this.currentFolder.sliderControl);
+                                  $('.360spin').attr('data-mode', 'NEW');
+
+                                  if (this.selectedTab == 0) {
+                                    $('.360spin').attr('data-lang', 'fr');
+                                  } else {
+                                    $('.360spin').attr('data-lang', 'en');
+                                  }
+
+                                  $('.360spin').attr('data-stop', this.currentFolder.dataStop);
+
+                                  $('.360spin').attr('data-title', JSON.stringify(this.currentFolder.dataTitle));
+
+                                  $('.360spin').attr('data-descriptions', JSON.stringify(this.currentFolder.dataDescriptions));
+                                  $('.360spin').attr('data-communication', JSON.stringify(this.currentFolder.dataCommunication));
+                                  $('.360spin').attr('data-specification', JSON.stringify(this.currentFolder.dataSpecification));
+                                  $('.360spin').attr('data-images', JSON.stringify(images));
+                                  $('.360spin').attr('data-large', JSON.stringify(imagesLarge));
+                                  $('.360spin').attr('data-details', JSON.stringify(imagesDetails));
+                                  $('.360spin').attr('data-frametime', this.frameTime);
+                                  $('.360spin').attr('data-inverse', this.inverseState);
+
+                                  var hs = document.getElementsByTagName('style');
+// console.log("hs array:", hs);
+                                  for (var i=0, max = hs.length; i < max; i++) {
+    // console.log("Current hs[i]:", hs[i]);
+                                    if(hs[i] && hs[i].parentNode) {
+                                      hs[i].parentNode.removeChild(hs[i]);
+                                    }
+                                  }
+
+        // var hs = document.getElementsByTagName('style');
+        // for (var i=0, max = hs.length; i < max; i++) {
+        //     hs[i].parentNode.removeChild(hs[i]);
+        // }
+                                  const styles = `
+                                  .slider::-webkit-slider-thumb {
+                                    background: ${this.color} !important;
+                                  }
+
+                                  .slider::-moz-range-thumb {
+                                    background: ${this.color} !important;
+                                  }
+                                  `;
+                                  render360();
+                                  this.addStyle(styles)
+
+                                  if (!this.reverseButtonEventAdded) {
+                                    document.getElementById('reverseButton').addEventListener('click', () => {
+            // Affichez le spinner et le texte de chargement
+                                      document.getElementById('loader').classList.remove('d-none');
+                                      document.getElementById('loadingText').classList.remove('d-none');
+                                      document.getElementById('buttonText').classList.add('d-none');
+
+            // Inversez le tableau d'images
+                                      this.listOfIndex.reverse();
+                                      this.refresh();
+
+            // Cachez le spinner et le texte de chargement
+                                      document.getElementById('loader').classList.add('d-none');
+                                      document.getElementById('loadingText').classList.add('d-none');
+                                      document.getElementById('buttonText').classList.remove('d-none');
+                                    });
+
+                                    this.reverseButtonEventAdded = true;
+                                  }
+
+
+                                },
+                                onChanged(event) {
+                                  if (this.currentFolder.dataStop > 3) {
+                                    this.currentFolder.dataStop = 3;
+                                  }
+                                  this.listOfIndex = this.currentFolder.productImagesSmall.map(({}, idx) => idx)
+                                  this.detailListOfIndex = this.currentFolder.detailsImages.map(({}, idx) => idx)
+                                  this.refresh();
+                                },
+                                toggleAnimation(e) {
+                                  e.preventDefault();
+
+                                  var api = $('.spritescontainer').spritespin('api');
+    var totalFrames = api.data.source.length;  // nombre total de frames
+    console.log("Total frames:", totalFrames);
+
+    var rotations = this.currentFolder.dataStop;  // rotations définies par l'utilisateur
+    console.log("Rotations:", rotations);
+
+    var initialFrames = rotations * totalFrames;  // calcule le nombre total de frames à avancer en fonction des rotations
+    console.log("Initial frames:", initialFrames);
+
+    // Clear any previous timeouts and intervals
+    if (this.animationTimeout) {
+      clearTimeout(this.animationTimeout);
+    }
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+    }
+
+    // Setup the animation
+    api.updateFrame(0);  // met à jour la frame actuelle
+    api.startAnimation();  // démarre l'animation
+
+    // Setup the timeout to stop the animation
+    this.animationTimeout = setTimeout(() => {
+      api.updateFrame(0);
+      api.stopAnimation();
+    }, initialFrames * api.data.frameTime);
+
+    console.log("dataStop", this.currentFolder.dataStop);
+  },
+
+  onChangeTab(tab){
+    this.selectedOnglet = TABS[tab]
+  },
+  onChangeType(type) {
+    this.imageType = type
+  },
+            // inverse(){
+            //     this.currentFolder.productImagesSmall= this.currentFolder.productImagesSmall.reverse();
+            //     this.inverseState= !this.inverseState;
+            //     this.refresh();
+            // },
+  inverse() {
+    this.inverseState = !this.inverseState;
+    if (this.inverseState) {
+      this.rotationMessage = 'Orientation inversée';
+    } else {
+      this.rotationMessage = 'Orientation normale';
+    }
+    this.refresh();
+
+        // Faire disparaitre le message après 3 secondes
+    setTimeout(() => {
+      this.rotationMessage = '';
+    }, 3000);
+  },
+  inverseOrder() {
+    this.currentFolder.productImagesSmall = this.currentFolder.productImagesSmall.reverse();
+    this.refresh();
+  },
+  deleteImage(pos){
+    if(this.imageType === "PRODUCT"){
+      this.currentFolder.productImagesSmall.splice(pos, 1);
+      this.currentFolder.productImagesLarge.splice(pos, 1);
+      this.originalSizes.splice(pos, 1);
+    }
+    else
+      this.currentFolder.detailsImages.splice(pos, 1);
+    this.refresh()
+  },
+  async checking(e) {
+    try {
+      this.imagesToUpload= [];
+      this.isLoading = true;
+      this.execute = true;
+      const uploadedImages = e.target.files;
+      this.imagesCount = uploadedImages.length;
+      for (var i = 0; i < uploadedImages.length; i++) {
+        this.originalSizes.push(this.displayInfo("Original size",uploadedImages[i]));
+        if(this.imageType == "PRODUCT"){
+          const fileReader = new FileReader();
+          fileReader.readAsDataURL(uploadedImages[i]);
+          const promise = new Promise((resolve, reject) => {
+            fileReader.onload = (fe) => {
+              const image = new Image();
+              image.src = fe.currentTarget.result;
+              image.onload = function(ie){
+                resolve(this.naturalWidth >=this.naturalHeight)
+              }
+            }
+          });
+          const aspectRatio = await promise;
+          if(!aspectRatio) this.execute = false;
+        }
+        this.imagesToUpload.push(uploadedImages[i])
+      };
+      this.isLoading = false;
+      if(!this.execute) this.openModal();
+      else {
+        this.uploadImages();
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
+  uploadImagesToServer(items){
+    const formData=new FormData();
+    formData.append('type', this.imageType );   
+    formData.append('width',1600);  
+    formData.append('height', 1600);    
+    formData.append('quality', 0.2);    
+    formData.append('productName', "constructeur"); 
+    items.forEach(img => {
+      formData.append('uploadedImages', img);
+    });
+    return axios.post(
+      'https://photo.revolutionnez.ca/api/test',
+      formData,
+      {
+                        // mode: 'no-cors',
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+      })
+    .then((res) => {
+      if(this.imageType == "PRODUCT"){
+        this.currentFolder.productImagesSmall = res.data.result.small ? [...this.currentFolder.productImagesSmall, ...res.data.result.small] : [];
+        this.currentFolder.productImagesLarge = res.data.result.large ? [...this.currentFolder.productImagesLarge, ...res.data.result.large] : [];
+        this.currentFolder.dataDescriptions[0].description = '';
+        this.currentFolder.dataDescriptions[0].start = 1;
+        this.currentFolder.dataDescriptions[0].end = this.currentFolder.productImagesLarge.length;
+        this.currentFolder.dataCount = [1, this.currentFolder.productImagesLarge.length]
+        this.listOfIndex = this.currentFolder.productImagesLarge.map(({}, idx ) => idx);
+      }
+      else{
+        this.currentFolder.detailsImages = res.data.result.details ? [...this.currentFolder.detailsImages, ...res.data.result.details] : [];
+        this.detailListOfIndex = this.currentFolder.detailsImages.map(({}, idx ) => idx);
+      }
+    })
+    .then(() =>  true)
+    .catch(() => false)
+    .finally(() => {
+      this.refresh();
+    })  
+  },
+  async uploadImages() {
+    try {
+      this.isLoading = true;
+      this.chunks(this.imagesToUpload, this.uploadImagesToServer, 5)
+      .then(res => {
+        this.isLoading= false;
+      });
+
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  continueUploading() {
+    this.execute= true;
+    this.uploadImages();
+  },
+  importData(data, key) {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = async () => {
+                // you can use this method to get file and perform respective operations
+      let files =   Array.from(input.files);
+      const reader = new FileReader();
+      const promise = new Promise((resolve, reject) => {
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+        reader.readAsDataURL(files[0]);
+      });
+      data[key]= {
+        name: files[0].name,
+        content: await promise
+      };
+      this.refresh();
+    };
+    input.click();
+  },
+  handleChangeMode(mode){
+    this.mode = mode;
+  },
+  handleChangeStart(e, item, idx){
+    const input = e.target
+    const imgCount=this.currentFolder.productImagesLarge.length;
+    const prevDesc= this.currentFolder.dataDescriptions[idx-1];
+
+    if(idx > 0 && (
+      item.start > imgCount || 
+      (prevDesc && item.start <= prevDesc.end) ||  
+      item.start > item.end
+      )){
+      input.classList.add("error") ;
+  } else {
+    input.classList.remove("error");
+  }
+  this.refresh()
+},
+handleChangeEnd(e, item, idx){
+  const imgCount=this.currentFolder.productImagesLarge.length;
+  const nextDesc=this.currentFolder.dataDescriptions[idx+1];
+
+  const input = e.target
+  if(
+    item.end > imgCount || 
+    item.end <= item.start
+    ){
+    input.classList.add("error") ;
+} else {
+  input.classList.remove("error");
+}
+if(item.end && Number(item.end) < imgCount && item.end >= item.start) {
+  nextDesc.start=Number(item.end)+1;
+  nextDesc.end=imgCount;
+}
+this.refresh()
+},
+calculateSize(img, maxWidth, maxHeight) {
+  let width = img.width;
+  let height = img.height;
+
+                // calculate the width and height, constraining the proportions
+  if (width > height) {
+    if (width > maxWidth) {
+      height = Math.round((height * maxWidth) / width);
+      width = maxWidth;
+    }
+  } else {
+    if (height > maxHeight) {
+      width = Math.round((width * maxHeight) / height);
+      height = maxHeight;
+    }
+  }
+  return [width, height];
+},
+async optimize() {
+  const img = new Image();
+  img.src = this.currentFolder.productImagesLarge[0];
+  const qualityImg = this.quality;
+  console.log("Qualité choisie:", qualityImg);
+
+  const promise = new Promise((resolve, reject) => {
+    img.onload = function () {
+      let newWidth = img.width;
+      let newHeight = img.height;
+      let maxWidth = window.innerWidth;
+      let maxHeight = window.innerHeight;
+            // calculate the width and height, constraining the proportions
+      if (newWidth > newHeight) {
+        if (newWidth > maxWidth) {
+          newHeight = Math.round((newHeight * maxWidth) / newWidth);
+          newWidth = maxWidth;
+        }
+      } else {
+        if (newHeight > maxHeight) {
+          newWidth = Math.round((newWidth * maxHeight) / newHeight);
+          newHeight = maxHeight;
+        }
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, newWidth, newHeight);
+      canvas.toBlob((blob) => {
+        console.log("Taille du fichier avant compression:", img.src.length);
+        console.log("Taille du fichier après compression:", blob.size);
+        resolve(blob);
+      },
+      "image/jpeg",
+      Number(qualityImg)
+      );
+      console.log("Largeur originale:", img.width, "Hauteur originale:", img.height);
+      console.log("Largeur ajustée:", newWidth, "Hauteur ajustée:", newHeight);
+      $("#canvas").html('');
+      $("#canvas").append(canvas);
+    };
+  })
+  const blob = await promise;
+  this.compressedSize = this.displayInfo("Taille compressé", blob);
+  state.modal_optimization.show();
+},
+displayInfo(label, file) {
+  return `${label} - ${this.readableBytes(file.size)}`;
+},
+readableBytes(bytes) {
+  const i = Math.floor(Math.log(bytes) / Math.log(1024)),
+  sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
+},
+getTotal(){
+  const imageSCount = this.currentFolder.productImagesLarge.length;
+  const imageDCount = this.currentFolder.detailsImages.length;
+  let total = imageSCount*0.20 + imageDCount*0.20;
+  if(this.hasGif) total+=2.00;
+  if(this.hasVideo) total+=2.00;
+  this.total = total.toFixed(2);
+},
+changeGenType(type){
+  this.type= type;
+},
+generateAnimation() {
+    // Définition de l'URL de base comme une constante
+    // const BASE_URL = 'http://ec2-35-182-43-160.ca-central-1.compute.amazonaws.com:5001/';
+  if (this.quality === 0) {
+    this.quality = 1;
+  }
+  if (this.currentFolder.continous === true || this.currentFolder.dataStop === 0) {
+    this.currentFolder.dataStop = 1;
+  }
+  if (!this.currentFolder.animationGifVideo) {
+    this.currentFolder.animationGifVideo = true;
+  }
+  this.isDownLoading = true;
+    //  // Modification des URL des images pour ajouter le préfixe BASE_URL
+    // let images = this.currentFolder.productImagesSmall.map(image => BASE_URL + image);
+    // let largeImages = this.currentFolder.productImagesLarge.map(image => BASE_URL + image);
+    // let detailsImages = this.currentFolder.detailsImages.map(image => BASE_URL + image);
+
+  let payload = {
+    type: this.type,
+        // frametime: this.frameTime,
+    inverse: this.inverseState,
+    color: this.color,
+    foreground: this.foreground,
+    titlealignment: this.currentFolder.dataTitleAlign,
+    descalignment: this.currentFolder.dataDescAlign,
+    titlebold: this.currentFolder.dataTitleBold,
+    titleitalic: this.currentFolder.dataTitleItalic,
+    titlesize: this.currentFolder.dataTitleSize,
+    descbold: this.currentFolder.dataDescBold,
+    descitalic: this.currentFolder.dataDescItalic,
+    descsize: this.currentFolder.dataDescSize,
+    height: this.currentFolder.dataHeight,
+    width: this.currentFolder.dataWidth,
+    folder: this.currentFolder.dataFolder,
+    zoom: this.currentFolder.dataZoom,
+    naming: this.currentFolder.dataNaming,
+    count: this.currentFolder.dataCount,
+    slidercontrol: this.currentFolder.sliderControl,
+    mode: 'NEW',
+    lang: 'fr',
+        // stop: this.currentFolder.continous == true ? 0 :this.currentFolder.dataStop,
+    initialRotations: this.currentFolder.dataStop,
+    title: this.currentFolder.dataTitle,
+    descriptions: this.currentFolder.dataDescriptions,
+    communication: this.currentFolder.dataCommunication,
+    specification: this.currentFolder.dataSpecification,
+    images: this.currentFolder.productImagesSmall,
+    large: this.currentFolder.productImagesLarge,
+    details: this.currentFolder.detailsImages,
+    filename:this.currentFolder.filename,
+    quality: this.quality,
+    animationGifVideo: this.currentFolder.animationGifVideo
+  }
+    // Ajoutez les nouvelles valeurs à l'objet payload existant
+  payload = {
+    ...payload,
+    quality: this.quality,
+    frameTime: this.frameTime,
+    rotation: this.rotation
+  };
+  console.log(`FrameTime before axios call: ${this.frameTime}`);
+// console.log(`Liens des images: ${images}`);
+  console.log(this.currentFolder.productImagesSmall);
+  console.log(this.currentFolder.productImagesLarge);
+  console.log(this.currentFolder.detailsImages);
+  console.log(payload);
+
+  axios.post(
+    'https://dev-photo.revolutionnez.ca/api/generate-animation-demo',
+    payload,
+    {
+      responseType: 'blob',
+      onDownloadProgress: (progressEvent) => {
+        if (progressEvent.total > 0) {
+          this.animationDownloadProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          console.log('animationDownloadProgress:', this.animationDownloadProgress);
+        } else {
+          this.animationDownloadProgress = 0;
+        }
+      },
+    }
+    )
+  .then((res) => {
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', this.currentFolder.filename + '.zip');
+    document.body.appendChild(link);
+    link.click();
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  })
+  .finally(() => {
+    this.isDownLoading = false;
+    this.hideConfirmModal();
+  });
+},
+addStyle(styles) {
+
+             /* Create style document */
+ var css = document.createElement('style');
+ css.type = 'text/css';
+
+ if (css.styleSheet)
+   css.styleSheet.cssText = styles;
+ else
+   css.appendChild(document.createTextNode(styles));
+
+             /* Append style to the tag name */
+ document.getElementsByTagName("head")[0].appendChild(css);
+},
+fetchPhoto (id) {
+  const url = `https://jsonplaceholder.typicode.com/photos/${id}`;
+  return axios.get(url)
+  .then(res => res.data)
+},
+
+all(items, fn) {
+  const promises = items.map(item => fn(item));
+  return Promise.all(promises);
+},
+series(items, fn) {
+  let result = [];
+  return items.reduce((acc, item) => {
+    acc = acc.then(() => {
+      return fn(item).then(res => result.push(res));
+    });
+    return acc;
+  }, Promise.resolve())
+  .then(() => result);
+},
+splitToChunks(items, chunkSize = 50) {
+  const result = [];
+  for (let i = 0; i < items.length; i+= chunkSize) {
+    result.push(items.slice(i, i + chunkSize));
+  }
+  return result;
+},
+async chunks(items, fn, chunkSize = 50) {
+  let result = [];
+  let i = 0;
+  let res = null
+  const chunks = this.splitToChunks(items, chunkSize);
+
+  do {
+    res = await fn(chunks[i]);
+    i+=1;
+  } while (i < chunks.length && res);
+  return Promise.resolve(true);
+
+}
+}
+}).mount('#main')
+
+</script>
+</body>
+
+</html>
+
+
