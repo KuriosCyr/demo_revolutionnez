@@ -1297,7 +1297,7 @@
       formData.append('uploadedImages', img);
     });
     return axios.post(
-      'https://photo.revolutionnez.ca/api/test',
+      'https://compresseur-production.up.railway.app/api/test',
       formData,
       {
                         // mode: 'no-cors',
@@ -1555,7 +1555,7 @@ generateAnimation() {
   console.log(payload);
 
   axios.post(
-    'https://dev-photo.revolutionnez.ca/api/generate-animation-demo',
+    'https://compresseur-production.up.railway.app/api/generate-animation-demo',
     payload,
     {
       responseType: 'blob',
