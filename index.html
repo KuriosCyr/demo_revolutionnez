@@ -1297,7 +1297,7 @@
       formData.append('uploadedImages', img);
     });
     return axios.post(
-      'https://compresseur-production.up.railway.app/api/test',
+      'https://compresseur-ivrh.onrender.com/api/test',
       formData,
       {
                         // mode: 'no-cors',
@@ -1555,7 +1555,7 @@ generateAnimation() {
   console.log(payload);
 
   axios.post(
-    'https://compresseur-production.up.railway.app/api/generate-animation-demo',
+    'https://compresseur-ivrh.onrender.com/api/generate-animation-demo',
     payload,
     {
       responseType: 'blob',
