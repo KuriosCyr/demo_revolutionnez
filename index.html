@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Constructeur-Demo</title>
+  <title>360PIK - Constructeur Demo</title>
   <link rel="icon" type="image/x-icon" href="https://ressources.revolutionnez.ca/assets/favicon.ico"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/css/styles.css">
   <link rel="stylesheet" href="./assets/css/font-awesome.css">
   <link rel="stylesheet" href="./assets/css/lightgallery.min.css">
@@ -18,59 +21,32 @@
   <script src="https://unpkg.com/vue@3"></script>
   <script type="text/javascript" src="./js/jszip-utils.js"></script>
   <style>
-    .spinner-border {
-      width: 1rem;
-      height: 1rem;
-      margin-left: 4px;
+    #gridDemo, #gridDemo2 {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 2px;
     }
-
+    @media (max-width: 767px) {
+      .navbar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      }
+      #gridDemo, #gridDemo2 {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+    @media (max-width: 575.98px) {
+      .navbar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      }
+      #gridDemo, #gridDemo2 {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 2px;
+      }
+    }
+    .grid-square { list-style-type: none; }
   </style>
-  <style>
-/*    @media (min-width: 576px) {*/
-/*    .navbar-grid {*/
-/*        display: grid;*/
-/*        grid-template-columns: repeat(10px, 1fr);*/
-/*    }*/
-/*}*/
-#gridDemo, #gridDemo2 {
-  display: grid;
-  grid-template-columns: repeat(9, 1fr); /* 4 images par ligne par défaut */
-  gap: 1px; 
-}
-
-@media (max-width: 767px) {
-  /* Pour les écrans plus petits (comme les mobiles en mode paysage) */
-  .navbar-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  }
-  #gridDemo, #gridDemo2 {
-    grid-template-columns: repeat(6, 1fr); /* 6 images par ligne */
-  }
-}
-
-@media (max-width: 575.98px) {
-  .navbar-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  }
-  #gridDemo, #gridDemo2 {
-    grid-template-columns: repeat(5, 1fr); /* 5 images par ligne */
-    gap: 1px;
-  }
-}
-.grid-square {
-  /* Styles pour les éléments de la grille */
-  list-style-type: none; /* Supprimer les puces de la liste */
-}
-
-</style>
-    <!--
-    Mandatory in IE 6, 7, 8 and 9.
-  -->
-    <!--[if IE]>
-    <script type="text/javascript" src="dist/jszip-utils-ie.js"></script>
-  <![endif]-->
 
 
   </head>
@@ -81,7 +57,7 @@
           <div class="col-md-4">
             <!-- Collection Name-->
             <div class="form-floating mb-3">
-              <select class="form-select" v-model="currentFolder" v-on:change="onChanged" style="height: 60px; width: 50%; border: 2px solid lightblue;">
+              <select class="form-select" v-model="currentFolder" v-on:change="onChanged" style="height: 55px; width: 60%;">
                 <option v-for="folder in folders" :value="folder">
                   {{folder.example}} 
                 </option>
@@ -103,7 +79,6 @@
                 <li>
                   <button class="nav-link" id="optPaid-tab" data-bs-toggle="tab" data-bs-target="#optPaid-tab-pane" type="button" role="tab" aria-controls="optPaid-tab-pane" aria-selected="false" v-on:click="onChangeTab('PAID_OPTIONS')" :disabled="currentFolder.productImagesSmall.length === 0"
                   :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
-                  <!-- <i class="fa fa-cart-plus fa-2x"></i>  -->
                   <i class="fa fa-arrows-to-dot fa-2x"></i>
                   <span>OPTIMISATION DES PHOTOS</span>
                 </button>
@@ -170,89 +145,47 @@
               </div>
             </div>
           </div>
-          <div class="toolbar mt-4" style="background-color: #fff;">
+          <div class="toolbar mt-4">
             <div class="toolbarItem">
-              <div class="form-check form-switch">
-                <!-- <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked1" v-model="currentFolder.continous" v-on:change="onChanged"> -->
-                <label class="form-check-label" style="margin-left: -10%;" for="flexSwitchCheckChecked1">Rotations initiales</label>
-                <input class="ms-2" type="number" v-model="currentFolder.dataStop" v-on:change="onChanged" max="3" min="0" style="width: 20%;">  
-                <!-- Ajout du bouton Test -->
-                <button id="fullscreenTest" class="btn ms-2" style="background-color: grey; color: white; height: 35px;" @click="toggleAnimation" v-bind:disabled="currentFolder.dataStop === 0 || currentFolder.dataStop === ''">Vérifier</button>
-
-              </div>
+              <label class="form-check-label me-2" for="initialRotations">Rotations initiales</label>
+              <input id="initialRotations" class="form-control form-control-sm d-inline-block" type="number" v-model="currentFolder.dataStop" v-on:change="onChanged" max="3" min="0" style="width: 60px;">
+              <button id="fullscreenTest" class="btn btn-sm btn-outline-secondary ms-2" @click="toggleAnimation" v-bind:disabled="currentFolder.dataStop === 0 || currentFolder.dataStop === ''">
+                <i class="fa fa-play me-1"></i> Tester
+              </button>
             </div>
             <div class="toolbarItem">
-              <label class="me-2">Vitesse de rotation</label>
-              <input type="range" v-model="frameTime" v-on:change="onChanged"  min="0" max="300" step="30" class="sliderTime me-2">
-              <b class="text-muted">{{currentFolder.productImagesSmall.length*frameTime/1000}} sec</b>
+              <label class="me-2 text-muted" for="speedRange">Vitesse</label>
+              <input id="speedRange" type="range" v-model="frameTime" v-on:change="onChanged" min="0" max="300" step="30" class="sliderTime me-2">
+              <b class="text-muted" style="min-width: 55px;">{{currentFolder.productImagesSmall.length*frameTime/1000}} sec</b>
             </div>
             <div class="toolbarItem">
-              <div class="border bg-light" id="count" style="height: auto;width:90px;padding: 2px;text-align: center;font-weight: 800;"> 0 / 0 </div>
+              <div id="count" style="min-width: 70px; padding: 4px 8px; text-align: center; font-weight: 600; font-size: 13px; background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius);"> 0 / 0 </div>
             </div>
           </div>
           <p v-if="rotationMessage">{{ rotationMessage }}</p>
-          <!--<div class="toolbar" style="background-color: #f1f1f1;">-->
-            <!--    <div class="toolbarItem">-->
-              <!--        <button type="button" class="btn btn-secondary btn-sm" v-on:click="inverse()" style="margin-right: 10px;">Inverser le sens du rotation</button>-->
-              <!--        <button type="button" class="btn btn-secondary btn-sm" id="reverseButton">-->
-                <!--            <span id="buttonText">Inverser l'ordre des photos</span>-->
-                <!--            <span id="loader" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>-->
-                <!--            <span id="loadingText" class="d-none">  Chargement...</span>-->
-                <!--        </button>-->
-                <!--    </div>-->
-                <!--    <div class="toolbarItem btn-group">-->
-                  <!--        <input type="radio" class="btn-check" id="optionsliderControl" v-model="currentFolder.sliderControl" value="SLIDER" v-on:change="onChanged"/>-->
-                  <!--        <label class="btn btn-sm btn-outline-secondary border-grey me-2" for="optionsliderControl" style=" width: 98px; "> -->
-                    <!--            <img v-if="currentFolder.sliderControl == 'SLIDER' " src="./assets/icons/slider-active.png"  style="width: 100%;"/>-->
-                    <!--            <img v-if="currentFolder.sliderControl != 'SLIDER' " src="./assets/icons/slider-inactive.png"  style="width: 100%;"/>-->
-                    <!--        </label>-->
-
-                    <!--        <input type="radio" class="btn-check" id="optionsliderControl2" v-model="currentFolder.sliderControl" value="ROTATE" v-on:change="onChanged"/>-->
-                    <!--        <label class="btn btn-sm btn-outline-secondary border-grey" for="optionsliderControl2" style=" width: 98px; ">                                                                -->
-                      <!--            <img v-if="currentFolder.sliderControl == 'ROTATE' " src="./assets/icons/rotate-active.png" style="width: 100%;"/>-->
-                      <!--            <img v-if="currentFolder.sliderControl != 'ROTATE' " src="./assets/icons/rotate-inactive.png"  style="width: 100%;"/>-->
-                      <!--        </label>-->
-                      <!--    </div>-->
-                      <!--</div>-->
-                      <div class="toolbar" style="background-color: #f1f1f1;" :disabled="currentFolder.productImagesSmall.length === 0"
-                      :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
+                      <div class="toolbar toolbar-controls" :style="{ opacity: currentFolder.productImagesSmall.length === 0 ? '0.5' : '1' }">
                       <div class="toolbarItem">
-                        <button type="button" class="btn btn-secondary btn-sm d-block d-md-inline-block mb-2 mb-md-0" v-on:click="inverse()" style="margin-right: 10px;">Inverser le sens du rotation</button>
-                        <button type="button" class="btn btn-secondary btn-sm d-block d-md-inline-block" id="reverseButton">
-                          <span id="buttonText">Inverser l'ordre des photos</span>
+                        <button type="button" class="btn btn-outline-secondary btn-sm d-block d-md-inline-block mb-2 mb-md-0" v-on:click="inverse()" style="margin-right: 10px;">
+                          <i class="fa fa-arrows-rotate me-1"></i> Inverser le sens
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm d-block d-md-inline-block" id="reverseButton">
+                          <span id="buttonText"><i class="fa fa-sort me-1"></i> Inverser l'ordre</span>
                           <span id="loader" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                          <span id="loadingText" class="d-none">  Chargement...</span>
+                          <span id="loadingText" class="d-none">Chargement...</span>
                         </button>
                       </div>
-                      <!-- <div class="toolbarItem btn-group btn-group-sm d-inline-flex">
+                      <div class="toolbarItem btn-group btn-group-sm d-inline-flex">
                         <input type="radio" class="btn-check" id="optionsliderControl" v-model="currentFolder.sliderControl" value="SLIDER" v-on:change="onChanged"/>
                         <label class="btn btn-sm btn-outline-secondary border-grey me-2" for="optionsliderControl" style="width: 98px;">
-                            <img v-if="currentFolder.sliderControl == 'SLIDER'" src="./assets/icons/slider-active.png" style="width: 100%;"/>
-                            <img v-if="currentFolder.sliderControl != 'SLIDER'" src="./assets/icons/slider-inactive.png" style="width: 100%;"/>
-                        </label>
-                    
-                        <input type="radio" class="btn-check" id="optionsliderControl2" v-model="currentFolder.sliderControl" value="ROTATE" v-on:change="onChanged"/>
-                        <label class="btn btn-sm btn-outline-secondary border-grey" for="optionsliderControl2" style="width: 98px;">
-                            <img v-if="currentFolder.sliderControl == 'ROTATE'" src="./assets/icons/rotate-active.png" style="width: 100%;"/>
-                            <img v-if="currentFolder.sliderControl != 'ROTATE'" src="./assets/icons/rotate-inactive.png" style="width: 100%;"/>
-                        </label>
-                    </div> -->
-
-                    <div class="toolbarItem btn-group btn-group-sm d-inline-flex">
-                      <input type="radio" class="btn-check" id="optionsliderControl" v-model="currentFolder.sliderControl" value="SLIDER" v-on:change="onChanged"/>
-                      <label class="btn btn-sm btn-outline-secondary border-grey me-2" for="optionsliderControl" style="width: 98px;">
                           <img v-if="currentFolder.sliderControl == 'SLIDER'" src="./assets/icons/slider-active.png" style="width: 100%;"/>
                           <img v-if="currentFolder.sliderControl != 'SLIDER'" src="./assets/icons/slider-inactive.png" style="width: 100%;"/>
-                      </label>
-                  
-                      <input type="radio" class="btn-check" id="optionsliderControl2" v-model="currentFolder.sliderControl" value="ROTATE" v-on:change="onChanged"/>
-                      <label class="btn btn-sm btn-outline-secondary border-grey" for="optionsliderControl2" style="width: 98px;">
+                        </label>
+                        <input type="radio" class="btn-check" id="optionsliderControl2" v-model="currentFolder.sliderControl" value="ROTATE" v-on:change="onChanged"/>
+                        <label class="btn btn-sm btn-outline-secondary border-grey" for="optionsliderControl2" style="width: 98px;">
                           <img v-if="currentFolder.sliderControl == 'ROTATE'" src="./assets/icons/rotate-active.png" style="width: 100%;"/>
                           <img v-if="currentFolder.sliderControl != 'ROTATE'" src="./assets/icons/rotate-inactive.png" style="width: 100%;"/>
-                      </label>
-                  </div>
-                  
-                    
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -260,24 +193,7 @@
                   <h6 class="text-center mb-4 text-muted">OPTIMISATION DES PHOTOS</h6><br>
                   <p>Nous mettons à votre disposition <b><u>gratuitement</u></b> notre constructeur <b>360PIK Démo</b>.</p><br>
 
-                  <!-- Toggle for animation + gif + video -->
-            <!-- <div class="form-check form-switch mb-3">
-                <input class="form-check-input" type="checkbox" role="switch" id="animationGifVideo" v-model="currentFolder.animationGifVideo" style="width: 2rem; height: 1.50rem;">
-                <label class="form-check-label" for="animationGifVideo"><b>Activer la compression des photos, la création d'une vidéo MP4 et d'un gif animé pour vos médias sociaux</b></label>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12 d-flex justify-content-center">
-                    <b v-if="currentFolder.animationGifVideo "> 12.95 $ CAD</b>
-                    <b v-if="!currentFolder.animationGifVideo "> 0.00 $ CAD</b>
-                </div>
-              </div> -->
-
               <div class="row justify-content-between align-items-center mt-4">
-                                            <!-- <div class="col-md-3">
-                                                <button type="button" class="btn btn-secondary btn-block mb-1">Payer la facture</button>
-                                                <button type="button" class="btn btn-secondary btn-block">Faire une avance</button>
-                                              </div> -->
                                               <div class="col-md-3">
                                                 <select class="form-select form-select-sm mb-1" v-model="quality">
                                                   <option value="0" selected disabled>Choisir un niveau de qualité</option>
@@ -421,11 +337,9 @@
                                               </div>
                                               <div class="tab-pane fade p-4" id="pdtLink-tab-pane" role="tabpanel" aria-labelledby="pdtLink-tab" tabindex="0">
                                                 <h6 class="text-center mb-4 text-muted">LIENS DU PRODUIT</h6>
-                                                <!-- Début de l'alerte pour la version autonome -->
                                                 <div class="alert alert-warning mt-4" role="alert">
-                                                  En version autonome, seulement le fichier à téléchargé et l’enregistrement audio peuvent être utilisés. Les liens ne sont pas disponibles.
+                                                  En version représentant, seulement le fichier à télécharger et l'enregistrement audio peuvent être utilisés. Les liens ne sont pas disponibles.
                                                 </div>
-                                                <!-- Fin de l'alerte pour la version autonome -->
                                                 <div v-if="currentFolder.dataSpecification">
                                                   <div class="d-flex align-items-center justify-content-between">
                                                     <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 1024 1024"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zM432 456c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg>
@@ -446,7 +360,7 @@
                                                       <label class="form-label">Enregistrement audio</label>
                                                     </div>
                                                     <div class="input-group-append" role="button" v-on:click="importData(currentFolder.dataSpecification, 'audio')">
-                                                      <span class="input-group-text" id="basic-addon2"><i class="fa fa-file"></i></span>
+                                                      <span class="input-group-text" id="basic-addon-audio"><i class="fa fa-file"></i></span>
                                                     </div>
                                                   </div>
                                                   <div class="d-flex align-items-center justify-content-between">
@@ -477,11 +391,9 @@
                                               </div>
                                               <div class="tab-pane fade p-4" id="compaLink-tab-pane" role="tabpanel" aria-labelledby="compaLink-tab" tabindex="0">
                                                 <h6 class="text-center mb-4 text-muted">LIENS DE L'ENTREPRISE</h6>
-                                                <!-- Début de l'alerte pour la version autonome -->
                                                 <div class="alert alert-warning mt-4" role="alert">
-                                                  En version autonome, les liens ne seront pas disponibles.
+                                                  En version représentant, les liens ne seront pas disponibles.
                                                 </div>
-                                                <!-- Fin de l'alerte pour la version autonome -->
                                                 <div v-if="currentFolder.dataCommunication">
                                                   <div class="d-flex align-items-center justify-content-between">
                                                     <svg width="40px" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg>
@@ -532,60 +444,50 @@
                                               </div>
                                               <div class="tab-pane fade p-4" id="lastStep-tab-pane" role="tabpanel" aria-labelledby="lastStep-tab" tabindex="0">
                                                 <h6 class="text-center mb-4 text-muted">TELECHARGEMENT ANIMATION 360PIK</h6>
-                                                <b>Télécharger pour :</b>
+                                                <p class="text-center text-muted mb-3">Nommez votre produit puis choisissez le type d'export</p>
                                                 <section class="service-categories text-xs-center">
                                                   <div class="container">
                                                     <div class="row text-center">
-                                                     <div class="col-md-12 mb-2">
+                                                     <div class="col-md-12 mb-3">
                                                       <div class="form-group">
-                                                        <input type="text" placeholder="Lien internet ou Fichier local" class="form-control me-2" maxlength="140"  v-model="currentFolder.filename"
-                                                        v-on:change="onChanged" style="border: 3px solid lightblue;"/>
+                                                        <input type="text" placeholder="Nom du produit" class="form-control me-2" maxlength="140" v-model="currentFolder.filename"
+                                                        v-on:change="onChanged"/>
                                                         <label class="form-label">Nom du produit</label>
                                                       </div>
                                                     </div>
-                                                    <div class="col-md-6 mb-2">
-                                                      <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="openConfirmModal('WEB'); " v-bind:style="currentFolder.filename == '' ? 'pointer-events: none;' : 'pointer-events: visible;'" :disabled="!currentFolder.filename">
+                                                    <div class="col-md-6 mb-3">
+                                                      <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="openConfirmModal('WEB')" :style="{ opacity: currentFolder.filename ? 1 : 0.5, pointerEvents: currentFolder.filename ? 'auto' : 'none' }">
                                                         <div class="card-block d-flex justify-content-center align-items-center">
-                                                          <span class="fa fa-globe fa-2x" style="margin-right:20px;"></span>
+                                                          <span class="fa fa-globe fa-2x me-3"></span>
                                                           <h4 class="card-title">Version Web</h4>
                                                         </div>
                                                       </div>
                                                     </div>
-                                                    <div class="col-md-6 mb-2">
-                                                      <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="openConfirmModal('COMPANY');" v-bind:style="currentFolder.filename == '' ? 'pointer-events: none;' : 'pointer-events: visible;'" :disabled="!currentFolder.filename">
+                                                    <div class="col-md-6 mb-3">
+                                                      <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="openConfirmModal('COMPANY')" :style="{ opacity: currentFolder.filename ? 1 : 0.5, pointerEvents: currentFolder.filename ? 'auto' : 'none' }">
                                                         <div class="card-block d-flex justify-content-center align-items-center">
-                                                          <span class="fa fa-desktop fa-2x" style="margin-right:20px;"></span>
+                                                          <span class="fa fa-desktop fa-2x me-3"></span>
                                                           <h4 class="card-title">Version Représentant</h4>
                                                         </div>
                                                       </div>
                                                     </div>
-                                                        <!-- <div class="col-md-6 mb-2">
-                                                            <div class="card service-card card-inverse text-secondary" role="button" v-on:click="openConfirmModal('COMPANY')" v-bind:style= "currentFolder.filename == '' ? 'pointer-events: none;' : 'pointer-events: visible;'">
-                                                                <div class="card-block d-flex justify-content-between align-items-center">
-                                                                    <span class="fa fa-user fa-2x"></span>
-                                                                    <h4 class="card-title">Représentant</h4>
-                                                                </div>
-                                                            </div>
-                                                          </div> -->
-
-                                                          <div class="col-md-6 mb-2">
+                                                          <div class="col-md-6 mb-3">
                                                             <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="resetObj()">
                                                               <div class="card-block d-flex justify-content-center align-items-center">
-                                                                <span class="fa fa-plus fa-2x" style="margin-right:20px;"></span>
+                                                                <span class="fa fa-plus fa-2x me-3"></span>
                                                                 <h4 class="card-title">Nouvelle animation</h4>
                                                               </div>
                                                             </div>
                                                           </div>
-                                                          <div class="col-md-6 mb-2">
+                                                          <div class="col-md-6 mb-3">
                                                             <div class="card service-card card-inverse text-secondary text-center" role="button" v-on:click="quit()">
                                                               <div class="card-block d-flex justify-content-center align-items-center">
-                                                                <span class="fa fa-close fa-2x" style="margin-right:20px;"></span>
+                                                                <span class="fa fa-xmark fa-2x me-3"></span>
                                                                 <h4 class="card-title">Quitter 360PIK</h4>
                                                               </div>
                                                             </div>
                                                           </div>
                                                         </div>
-                                                        <!--End Row-->
                                                       </div>
                                                     </section>
                                                   </div>
@@ -613,32 +515,29 @@
                                                 Guides - 
                                                 <a href="https://revolutionnez.ca/informations" target="_blank">Informations importantes</a>
                                               </h4>
-                                              <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true"
-                                              style="border-radius: 0.25rem;">&times;</button>
+                                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                                             </div>
                                             <div class="modal-body">
                                               <h4 v-text="selectedOnglet.title"></h4>
                                               <p v-html="selectedOnglet.description"></p>
                                             </div>
                                           </div>
-                                          <!-- /.modal-content -->
                                         </div>
-                                        <!-- /.modal-dialog -->
                                       </div>
                                       <div class="modal modal-lg fade" id="confirmModal" data-bs-backdrop="false">
                                         <div class="modal-dialog">
                                           <div class="modal-content">
                                             <div class="modal-header">
-                                              <h4 class="modal-title">Confirmation de téléchargement</h4>  
-                                              <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                                              <h4 class="modal-title">Confirmation de téléchargement</h4>
+                                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                                             </div>
                                             <div class="modal-body">
-                                              <p>Vous avez <b v-text="imagesCount"></b> images à télécharger</p>
-                                              <p>Aspect Ratio : <b v-text="execute ? 'Tous les ratios sont biens' : 'La (H) des images doivent être moins que (L)'"></b></p>
+                                              <p><i class="fa fa-images me-2 text-muted"></i>Vous avez <b v-text="imagesCount"></b> images à télécharger</p>
+                                              <p><i class="fa fa-check-circle me-2" :class="execute ? 'text-success' : 'text-danger'"></i>Aspect Ratio : <b v-text="execute ? 'Tous les ratios sont corrects' : 'La hauteur des images doit être inférieure à la largeur'"></b></p>
                                             </div>
                                             <div class="modal-footer d-flex justify-content-between align-items-center">
-                                              <button type="button" class="btn btn-primary" data-bs-dismiss="modal"  aria-hidden="true">Annuler</button>
-                                              <button type="button" class="btn btn-secondary" v-on:click="uploadImages">Continuer le téléchargement</button>
+                                              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                                              <button type="button" class="btn btn-primary" v-on:click="uploadImages"><i class="fa fa-upload me-1"></i> Continuer</button>
                                             </div>
 
                                           </div>
@@ -647,49 +546,58 @@
                                         <!-- /.modal-dialog -->
                                       </div>
                                       <div class="modal modal-lg fade" id="downloadModal" data-bs-backdrop="false" style="max-width: 100% !important;">
-                                        <div class="modal-dialog" style="max-width: 45% !important;">
+                                        <div class="modal-dialog" style="max-width: 50% !important;">
                                           <div class="modal-content">
                                             <div class="modal-header">
-                                              <h4 class="modal-title">Confirmation de téléchargement</h4>  
-                                              <button type="button" class="close" style="border-radius: 0.25rem;" data-bs-dismiss="modal" aria-hidden="true">&times;</button>
+                                              <h4 class="modal-title"><i class="fa fa-download me-2"></i>Téléchargement Animation 360</h4>
+                                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer" :disabled="isDownLoading"></button>
                                             </div>
-                                            <div class="modal-body" style="width: 100%;">
-                                              <!-- <form id="confirm" v-if="!isDownLoading">
-                                                <div class="form-group">
-                                                  <div style="overflow: hidden;">
-                                                    <iframe 
-                                                    sandbox="allow-scripts allow-same-origin allow-popups allow-top-navigation allow-popups-to-escape-sandbox" 
-                                                    src="https://zc.vg/sf/KXIAF" 
-                                                    loading="lazy"
-                                                    style="width: 105%; height: 550px; border: none; margin-left: -2.5%; margin-top: -2.5%;">
-                                                  </iframe>
+                                            <div class="modal-body">
+
+                                            <div class="download-progress-panel" v-if="isDownLoading">
+                                              <div class="progress-phase-indicator">
+                                                <div class="phase-step" :class="{ active: downloadPhase === 'upload', done: downloadPhase !== 'upload' && animationDownloadProgress > 5 }">
+                                                  <i class="fa fa-cloud-arrow-up"></i>
+                                                  <span>Envoi</span>
                                                 </div>
-
+                                                <div class="phase-connector" :class="{ filled: downloadPhase !== 'upload' }"></div>
+                                                <div class="phase-step" :class="{ active: downloadPhase === 'processing', done: downloadPhase === 'download' || downloadPhase === 'done' }">
+                                                  <i class="fa fa-gears"></i>
+                                                  <span>Traitement</span>
+                                                </div>
+                                                <div class="phase-connector" :class="{ filled: downloadPhase === 'download' || downloadPhase === 'done' }"></div>
+                                                <div class="phase-step" :class="{ active: downloadPhase === 'download', done: downloadPhase === 'done' }">
+                                                  <i class="fa fa-download"></i>
+                                                  <span>Fichier</span>
+                                                </div>
                                               </div>
-                                            </form> -->
-
-                                            <div class="loading border mt-2 p-3 bg-light d-flex justify-content-between align-items-center" v-if="isDownLoading">
-                                              <div>
-                                                <h6>{{ downloadMessage }}</h6>
-                                                <div class="progress" style="width: 100%;">
-                                                  <div class="progress-bar"
+                                              <p class="progress-message">{{ downloadMessage }}</p>
+                                              <div class="progress progress-animated">
+                                                <div class="progress-bar"
+                                                  :class="{ 'progress-bar-striped progress-bar-animated': downloadPhase === 'processing' }"
                                                   role="progressbar"
                                                   :style="{ width: animationDownloadProgress + '%' }"
                                                   :aria-valuenow="animationDownloadProgress"
                                                   aria-valuemin="0"
                                                   aria-valuemax="100">
-                                                  Animation : {{ animationDownloadProgress }}%
+                                                  {{ animationDownloadProgress }}%
                                                 </div>
                                               </div>
+                                              <p class="progress-detail text-muted" v-if="downloadPhase === 'processing'">
+                                                <i class="fa fa-spinner fa-spin"></i> Génération du GIF, de la vidéo et de l'archive...
+                                              </p>
                                             </div>
-                                          </div>
                                         </div>
                                         <!-- Dans le "modal-footer" -->
                                         <div class="modal-footer d-flex justify-content-between align-items-center">
-                                          <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-hidden="true" :disabled="isDownLoading">Annuler</button>-->
-                                          <!--<button type="button" class="btn btn-secondary" v-on:click="generateAnimation" :disabled="isDownLoading">Télécharger</button>-->
-                                          <button type="button" class="btn btn-secondary" :disabled="isDownLoading" @click="generateAndSubmit">Télécharger</button>
-
+                                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" :disabled="isDownLoading">
+                                            <i class="fa fa-times me-1"></i> Annuler
+                                          </button>
+                                          <button type="button" class="btn btn-primary" :disabled="isDownLoading" @click="generateAndSubmit">
+                                            <i class="fa fa-download me-1" v-if="!isDownLoading"></i>
+                                            <span class="spinner-border spinner-border-sm me-1" v-if="isDownLoading"></span>
+                                            {{ isDownLoading ? 'En cours...' : 'Télécharger' }}
+                                          </button>
                                         </div>
 
                                       </div>
@@ -701,21 +609,19 @@
                                     <div class="modal-dialog" style="max-width: 100% !important;">
                                       <div class="modal-content">
                                         <div class="modal-header">
-                                          <h6 class="modal-title">Test d'optimization</h6>  
-                                          <button type="button" class="close" data-bs-dismiss="modal" aria-hidden="true" style="border-radius: 0.25rem;">&times;</button>
+                                          <h6 class="modal-title"><i class="fa fa-compress me-2"></i>Test d'optimisation</h6>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                                         </div>
                                         <div class="modal-body text-center">
                                           <h5 v-text="originalSizes[0]"></h5>
                                           <h5 v-text="compressedSize"></h5>
                                           <div id="canvas"></div>
                                         </div>
-                                        <div class="modal-footer d-flex justify-content-between align-items-center">
-                                          <button type="button" style="border-radius: 0.25rem;" class="btn btn-secondary" data-bs-dismiss="modal"  aria-hidden="true">Annuler</button>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
                                         </div>
                                       </div>
-                                      <!-- /.modal-content -->
                                     </div>
-                                    <!-- /.modal-dialog -->
                                   </div>
 
 
@@ -930,10 +836,9 @@
                                     isDownLoading: false,
                                     folders: demos,
                                     animationDownloadProgress: 0,
-                                    gifDownloadProgress: 0,
-                                    videoDownloadProgress: 0,
-                                    downloadMessage: "Téléchargement de l'animation en cours...",
-                // reverseButtonEventAdded: false,
+                                    downloadMessage: "Préparation...",
+                                    downloadPhase: "upload",
+                                    processingInterval: null,
                                     rotationMessage: 'Orientation normale',
                                     formSubmitted: false
                                   }
@@ -1029,9 +934,7 @@
                                 quit(){
                                   this.currentFolder=initialValues;
                                 },
-                                checkMove: function(e) {
-                                  window.console.log("Future index: " + e.draggedContext.futureIndex);
-                                },
+                                checkMove: function(e) {},
                                 showVideoOrAudio(){
                                   $("#assets-modal").removeClass( "d-none" ).addClass( "d-block" );
                                 },
@@ -1062,15 +965,12 @@
                                   }
                                   this.type = type;
                                   state.modal_download.show();
-                                  console.log("Type : ", this.type)
                                 },
                                 hideConfirmModal(){
                                   this.type = "";
                                   state.modal_download.hide()
                                 },
                                 refresh() {
-            // console.log(this.listOfIndex);
-
                                   const images = this.listOfIndex.map((pos) => this.currentFolder.productImagesSmall[pos]);
                                   const imagesLarge = this.listOfIndex.map((pos) => this.currentFolder.productImagesLarge[pos]);
                                   const imagesDetails = this.detailListOfIndex.map((pos) => this.currentFolder.detailsImages[pos]);
@@ -1122,18 +1022,11 @@
                                   $('.360spin').attr('data-inverse', this.inverseState);
 
                                   var hs = document.getElementsByTagName('style');
-// console.log("hs array:", hs);
                                   for (var i=0, max = hs.length; i < max; i++) {
-    // console.log("Current hs[i]:", hs[i]);
                                     if(hs[i] && hs[i].parentNode) {
                                       hs[i].parentNode.removeChild(hs[i]);
                                     }
                                   }
-
-        // var hs = document.getElementsByTagName('style');
-        // for (var i=0, max = hs.length; i < max; i++) {
-        //     hs[i].parentNode.removeChild(hs[i]);
-        // }
                                   const styles = `
                                   .slider::-webkit-slider-thumb {
                                     background: ${this.color} !important;
@@ -1178,37 +1071,22 @@
                                 },
                                 toggleAnimation(e) {
                                   e.preventDefault();
-
                                   var api = $('.spritescontainer').spritespin('api');
-    var totalFrames = api.data.source.length;  // nombre total de frames
-    console.log("Total frames:", totalFrames);
+                                  var totalFrames = api.data.source.length;
+                                  var rotations = this.currentFolder.dataStop;
+                                  var initialFrames = rotations * totalFrames;
 
-    var rotations = this.currentFolder.dataStop;  // rotations définies par l'utilisateur
-    console.log("Rotations:", rotations);
+                                  if (this.animationTimeout) clearTimeout(this.animationTimeout);
+                                  if (this.animationInterval) clearInterval(this.animationInterval);
 
-    var initialFrames = rotations * totalFrames;  // calcule le nombre total de frames à avancer en fonction des rotations
-    console.log("Initial frames:", initialFrames);
+                                  api.updateFrame(0);
+                                  api.startAnimation();
 
-    // Clear any previous timeouts and intervals
-    if (this.animationTimeout) {
-      clearTimeout(this.animationTimeout);
-    }
-    if (this.animationInterval) {
-      clearInterval(this.animationInterval);
-    }
-
-    // Setup the animation
-    api.updateFrame(0);  // met à jour la frame actuelle
-    api.startAnimation();  // démarre l'animation
-
-    // Setup the timeout to stop the animation
-    this.animationTimeout = setTimeout(() => {
-      api.updateFrame(0);
-      api.stopAnimation();
-    }, initialFrames * api.data.frameTime);
-
-    console.log("dataStop", this.currentFolder.dataStop);
-  },
+                                  this.animationTimeout = setTimeout(() => {
+                                    api.updateFrame(0);
+                                    api.stopAnimation();
+                                  }, initialFrames * api.data.frameTime);
+                                },
 
   onChangeTab(tab){
     this.selectedOnglet = TABS[tab]
@@ -1216,11 +1094,6 @@
   onChangeType(type) {
     this.imageType = type
   },
-            // inverse(){
-            //     this.currentFolder.productImagesSmall= this.currentFolder.productImagesSmall.reverse();
-            //     this.inverseState= !this.inverseState;
-            //     this.refresh();
-            // },
   inverse() {
     this.inverseState = !this.inverseState;
     if (this.inverseState) {
@@ -1423,7 +1296,6 @@ async optimize() {
   const img = new Image();
   img.src = this.currentFolder.productImagesLarge[0];
   const qualityImg = this.quality;
-  console.log("Qualité choisie:", qualityImg);
 
   const promise = new Promise((resolve, reject) => {
     img.onload = function () {
@@ -1449,15 +1321,11 @@ async optimize() {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, newWidth, newHeight);
       canvas.toBlob((blob) => {
-        console.log("Taille du fichier avant compression:", img.src.length);
-        console.log("Taille du fichier après compression:", blob.size);
         resolve(blob);
       },
       "image/jpeg",
       Number(qualityImg)
       );
-      console.log("Largeur originale:", img.width, "Hauteur originale:", img.height);
-      console.log("Largeur ajustée:", newWidth, "Hauteur ajustée:", newHeight);
       $("#canvas").html('');
       $("#canvas").append(canvas);
     };
@@ -1487,26 +1355,17 @@ changeGenType(type){
   this.type= type;
 },
 generateAnimation() {
-    // Définition de l'URL de base comme une constante
-    // const BASE_URL = 'http://ec2-35-182-43-160.ca-central-1.compute.amazonaws.com:5001/';
-  if (this.quality === 0) {
-    this.quality = 1;
-  }
-  if (this.currentFolder.continous === true || this.currentFolder.dataStop === 0) {
-    this.currentFolder.dataStop = 1;
-  }
-  if (!this.currentFolder.animationGifVideo) {
-    this.currentFolder.animationGifVideo = true;
-  }
-  this.isDownLoading = true;
-    //  // Modification des URL des images pour ajouter le préfixe BASE_URL
-    // let images = this.currentFolder.productImagesSmall.map(image => BASE_URL + image);
-    // let largeImages = this.currentFolder.productImagesLarge.map(image => BASE_URL + image);
-    // let detailsImages = this.currentFolder.detailsImages.map(image => BASE_URL + image);
+  if (this.quality === 0) this.quality = 1;
+  if (this.currentFolder.continous === true || this.currentFolder.dataStop === 0) this.currentFolder.dataStop = 1;
+  if (!this.currentFolder.animationGifVideo) this.currentFolder.animationGifVideo = true;
 
-  let payload = {
+  this.isDownLoading = true;
+  this.animationDownloadProgress = 0;
+  this.downloadPhase = "upload";
+  this.downloadMessage = "Envoi des données au serveur...";
+
+  const payload = {
     type: this.type,
-        // frametime: this.frameTime,
     inverse: this.inverseState,
     color: this.color,
     foreground: this.foreground,
@@ -1527,7 +1386,6 @@ generateAnimation() {
     slidercontrol: this.currentFolder.sliderControl,
     mode: 'NEW',
     lang: 'fr',
-        // stop: this.currentFolder.continous == true ? 0 :this.currentFolder.dataStop,
     initialRotations: this.currentFolder.dataStop,
     title: this.currentFolder.dataTitle,
     descriptions: this.currentFolder.dataDescriptions,
@@ -1536,54 +1394,83 @@ generateAnimation() {
     images: this.currentFolder.productImagesSmall,
     large: this.currentFolder.productImagesLarge,
     details: this.currentFolder.detailsImages,
-    filename:this.currentFolder.filename,
+    filename: this.currentFolder.filename,
     quality: this.quality,
-    animationGifVideo: this.currentFolder.animationGifVideo
-  }
-    // Ajoutez les nouvelles valeurs à l'objet payload existant
-  payload = {
-    ...payload,
-    quality: this.quality,
+    animationGifVideo: this.currentFolder.animationGifVideo,
     frameTime: this.frameTime,
     rotation: this.rotation
   };
-  console.log(`FrameTime before axios call: ${this.frameTime}`);
-// console.log(`Liens des images: ${images}`);
-  console.log(this.currentFolder.productImagesSmall);
-  console.log(this.currentFolder.productImagesLarge);
-  console.log(this.currentFolder.detailsImages);
-  console.log(payload);
 
   axios.post(
     'https://compresseur-ivrh.onrender.com/api/generate-animation-demo',
     payload,
     {
       responseType: 'blob',
-      onDownloadProgress: (progressEvent) => {
+      onUploadProgress: (progressEvent) => {
         if (progressEvent.total > 0) {
-          this.animationDownloadProgress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          console.log('animationDownloadProgress:', this.animationDownloadProgress);
+          const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          this.animationDownloadProgress = Math.round(pct * 0.40);
+          this.downloadMessage = `Envoi des données... ${pct}%`;
+        }
+        if (progressEvent.loaded === progressEvent.total) {
+          this.downloadPhase = "processing";
+          this.downloadMessage = "Le serveur génère votre animation...";
+          this.animationDownloadProgress = 40;
+          this.startProcessingProgress();
+        }
+      },
+      onDownloadProgress: (progressEvent) => {
+        this.stopProcessingProgress();
+        this.downloadPhase = "download";
+        if (progressEvent.total > 0) {
+          const pct = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          this.animationDownloadProgress = 70 + Math.round(pct * 0.30);
+          this.downloadMessage = `Téléchargement du fichier... ${pct}%`;
         } else {
-          this.animationDownloadProgress = 0;
+          this.animationDownloadProgress = 85;
+          this.downloadMessage = "Téléchargement en cours...";
         }
       },
     }
-    )
+  )
   .then((res) => {
+    this.downloadPhase = "done";
+    this.animationDownloadProgress = 100;
+    this.downloadMessage = "Téléchargement terminé !";
     const url = window.URL.createObjectURL(new Blob([res.data]));
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', this.currentFolder.filename + '.zip');
     document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   })
   .catch((error) => {
     console.error("Error:", error);
+    this.downloadMessage = "Erreur lors du téléchargement.";
+    this.downloadPhase = "upload";
   })
   .finally(() => {
-    this.isDownLoading = false;
-    this.hideConfirmModal();
+    this.stopProcessingProgress();
+    setTimeout(() => {
+      this.isDownLoading = false;
+      this.hideConfirmModal();
+    }, 1500);
   });
+},
+startProcessingProgress() {
+  this.processingInterval = setInterval(() => {
+    if (this.animationDownloadProgress < 68) {
+      this.animationDownloadProgress += 1;
+    }
+  }, 3000);
+},
+stopProcessingProgress() {
+  if (this.processingInterval) {
+    clearInterval(this.processingInterval);
+    this.processingInterval = null;
+  }
 },
 addStyle(styles) {
 
